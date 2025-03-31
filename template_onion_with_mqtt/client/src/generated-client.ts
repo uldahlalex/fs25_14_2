@@ -184,7 +184,7 @@ export class WeatherStationClient {
 
         let options_: RequestInit = {
             body: content_,
-            method: "GET",
+            method: "POST",
             headers: {
                 "authorization": authorization !== undefined && authorization !== null ? "" + authorization : "",
                 "Content-Type": "application/json",
@@ -232,8 +232,18 @@ export interface AuthRequestDto {
 export interface Devicelog {
     deviceid?: string;
     value?: number;
+    id?: string;
     unit?: string;
     timestamp?: Date;
+}
+
+export interface ApplicationBaseDto {
+    eventType?: string;
+}
+
+export interface ServerBroadcastsLiveDataToDashboard extends ApplicationBaseDto {
+    logs?: Devicelog[];
+    eventType?: string;
 }
 
 
@@ -262,6 +272,8 @@ export interface ServerSendsErrorMessage extends BaseDto {
 
 /** Available eventType constants */
 export enum StringConstants {
+    ServerBroadcastsLiveDataToDashboard = "ServerBroadcastsLiveDataToDashboard",
+    ApplicationBaseDto = "ApplicationBaseDto",
     MemberLeftNotification = "MemberLeftNotification",
     ExampleClientDto = "ExampleClientDto",
     ExampleServerResponse = "ExampleServerResponse",

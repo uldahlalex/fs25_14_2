@@ -109,8 +109,6 @@ public class SecurityService(IOptionsMonitor<AppOptions> optionsMonitor, IUserRe
             .MustVerifySignature()
             .Decode<JwtClaims>(jwt);
 
-        if (DateTimeOffset.FromUnixTimeSeconds(long.Parse(token.Exp)) < DateTimeOffset.UtcNow)
-            throw new AuthenticationException("Token expired");
         return token;
     }
 }

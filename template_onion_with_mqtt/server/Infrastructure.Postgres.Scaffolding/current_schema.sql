@@ -8,11 +8,12 @@ END $EF$;
 
 
 CREATE TABLE weatherstation.devicelog (
+    id text NOT NULL,
     deviceid text NOT NULL,
     value numeric NOT NULL,
     unit text NOT NULL,
     timestamp timestamp with time zone NOT NULL,
-    CONSTRAINT devicelog_pkey PRIMARY KEY (deviceid)
+    CONSTRAINT devicelog_pkey PRIMARY KEY (id)
 );
 
 

@@ -11,8 +11,8 @@ namespace Infrastructure.MQTT.SubscriptionEventHandlers;
 
 public class DeviceLogEventHandler(IWeatherStationService weatherStationService) : IMqttMessageHandler
 {
-    public string TopicFilter { get; }
-    public QualityOfService QoS { get; }
+    public string TopicFilter { get; } = "device/+/log";
+    public QualityOfService QoS { get; } = QualityOfService.AtLeastOnceDelivery;
     public void Handle(object? sender, OnMessageReceivedEventArgs args)
     {
         var dto = JsonSerializer.Deserialize<DeviceLogDto>(args.PublishMessage.PayloadAsString,

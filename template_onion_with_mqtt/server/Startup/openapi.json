@@ -125,7 +125,7 @@
       }
     },
     "/SubscribeToLiveChanges": {
-      "get": {
+      "post": {
         "tags": [
           "WeatherStation"
         ],
@@ -212,12 +212,47 @@
             "type": "number",
             "format": "decimal"
           },
+          "id": {
+            "type": "string"
+          },
           "unit": {
             "type": "string"
           },
           "timestamp": {
             "type": "string",
             "format": "date-time"
+          }
+        }
+      },
+      "ServerBroadcastsLiveDataToDashboard": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ApplicationBaseDto"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "logs": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Devicelog"
+                }
+              },
+              "eventType": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "ApplicationBaseDto": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false,
+        "properties": {
+          "eventType": {
+            "type": "string"
           }
         }
       },
@@ -326,6 +361,8 @@
         "type": "string",
         "description": "Available eventType constants",
         "enum": [
+          "ServerBroadcastsLiveDataToDashboard",
+          "ApplicationBaseDto",
           "MemberLeftNotification",
           "ExampleClientDto",
           "ExampleServerResponse",

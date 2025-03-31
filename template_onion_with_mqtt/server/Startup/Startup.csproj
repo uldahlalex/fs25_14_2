@@ -14,6 +14,7 @@
         <ProjectReference Include="..\Api.Websocket\Api.Websocket.csproj"/>
         <ProjectReference Include="..\Infrastructure.Websocket\Infrastructure.Websocket.csproj"/>
         <ProjectReference Include="..\Infrastructure.Postgres\Infrastructure.Postgres.csproj"/>
+        <ProjectReference Include="..\Infrastructure.MQTT\Infrastructure.MQTT.csproj"/>
         <ProjectReference Include="..\Application\Application.csproj"/>
         <PackageReference Include="NSwag.CodeGeneration.TypeScript" Version="14.2.0"/>
         <PackageReference Include="patrikvalentiny-WebSocketProxy" Version="1.1.0"/>

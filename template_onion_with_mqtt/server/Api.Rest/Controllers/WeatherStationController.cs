@@ -25,10 +25,11 @@ public class WeatherStationController(
     }
 
     public const string SubscribeToLiveChangesRoute = nameof(SubscribeToLiveChanges);
-    [HttpGet]
+    [HttpPost]
     [Route(SubscribeToLiveChangesRoute)]
     public async Task<ActionResult> SubscribeToLiveChanges([FromHeader] string authorization, [FromBody]string clientId)
     {
+        securityService.VerifyJwtOrThrow(authorization);
         await connectionManager.AddToTopic("dashboard", clientId);
         return Ok();
     }

@@ -34,6 +34,7 @@ public class Program
 
         services.RegisterWebsocketApiServices();
         services.RegisterRestApiServices();
+        services.RegisterMqttInfrastructure();
         services.AddOpenApiDocument(conf =>
         {
             conf.DocumentProcessors.Add(new AddAllDerivedTypesProcessor());
@@ -59,6 +60,7 @@ public class Program
             .StartProxyServer(appOptions.PORT, appOptions.REST_PORT, appOptions.WS_PORT);
 
         app.ConfigureRestApi();
+       await app.ConfigureMqtt();
         await app.ConfigureWebsocketApi(appOptions.WS_PORT);
 
 

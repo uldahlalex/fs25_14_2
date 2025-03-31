@@ -20,10 +20,11 @@ public partial class MyDbContext : DbContext
     {
         modelBuilder.Entity<Devicelog>(entity =>
         {
-            entity.HasKey(e => e.Deviceid).HasName("devicelog_pkey");
+            entity.HasKey(e => e.Id).HasName("devicelog_pkey");
 
             entity.ToTable("devicelog", "weatherstation");
 
+            entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Deviceid).HasColumnName("deviceid");
             entity.Property(e => e.Timestamp).HasColumnName("timestamp");
             entity.Property(e => e.Unit).HasColumnName("unit");

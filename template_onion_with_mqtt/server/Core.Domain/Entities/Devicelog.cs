@@ -9,6 +9,8 @@ public partial class Devicelog
 
     public decimal Value { get; set; }
 
+    public string Id { get; set; } = null!;
+
     public string Unit { get; set; } = null!;
 
     public DateTime Timestamp { get; set; }

@@ -1,3 +1,4 @@
+using Application.Models.Dtos;
 using NJsonSchema;
 using NSwag.Generation.Processors;
 using NSwag.Generation.Processors.Contexts;
@@ -25,13 +26,11 @@ public sealed class AddStringConstantsProcessor : IDocumentProcessor
                     return Array.Empty<Type>();
                 }
             })
-            //Here I'm actively looking for types used by the Websocket API
-            //(ApplicationBaseDto is also relevant because Mqtt Infrastructure doesn't have websocket dependencies,
-            // but I still want the inheritors to be documented by openapi)
-            .Where(t =>
+              .Where(t =>
                 t != typeof(BaseDto) &&
                 !t.IsAbstract &&
-                typeof(BaseDto).IsAssignableFrom(t)
+                typeof(BaseDto).IsAssignableFrom(t) ||
+                typeof(ApplicationBaseDto).IsAssignableFrom(t)                
             )
             .Select(t => t.Name)
             .ToArray();

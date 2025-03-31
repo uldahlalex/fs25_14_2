@@ -22,11 +22,16 @@ public class WeatherStationService(IWeatherStationRepository weatherStationRepos
             Timestamp = DateTime.UtcNow,
             Deviceid = dto.DeviceId,
             Unit = dto.Unit,
-            Value = dto.Value
+            Value = dto.Value,
+            Id = Guid.NewGuid().ToString()
         };
         weatherStationRepository.AddDeviceLog(deviceLog);
         var recentLogs = weatherStationRepository.GetRecentLogs();
-        connectionManager.BroadcastToTopic("dashboard", recentLogs);
+        var broadcast = new ServerBroadcastsLiveDataToDashboard()
+        {
+            Logs = recentLogs,
+        };
+        connectionManager.BroadcastToTopic("dashboard", broadcast);
         return Task.CompletedTask;
     }
 }
