@@ -1,16 +1,18 @@
 name: Deploy to Firebase Hosting on merge
+
 on:
   workflow_dispatch: 
+  push:
     
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: cd client && npm ci && npm run build
+      - run: cd template_onion_with_mqtt/client && npm ci && npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          entryPoint: 'client'
+          entryPoint: 'template_onion_with_mqtt/client'
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_ONIONTEMPLATE }}
           channelId: live

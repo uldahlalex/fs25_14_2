@@ -6,6 +6,7 @@ using Infrastructure.Postgres;
 using Infrastructure.Websocket;
 using Microsoft.Extensions.Options;
 using NSwag.Generation;
+using Scalar.AspNetCore;
 using Startup.Documentation;
 using Startup.Proxy;
 
@@ -69,5 +70,6 @@ public class Program
         var json = document.ToJson();
         await File.WriteAllTextAsync("openapi.json", json);
         app.GenerateTypeScriptClient("/../../client/src/generated-client.ts").GetAwaiter().GetResult();
+        app.MapScalarApiReference();
     }
 }
