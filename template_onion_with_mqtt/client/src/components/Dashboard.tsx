@@ -38,12 +38,10 @@ export default function AdminDashboard() {
 
         const unsub = onMessage<ServerBroadcastsLiveDataToDashboard>(StringConstants.ServerBroadcastsLiveDataToDashboard, (dto) =>  {
             console.log(dto)
+            toast("New data from IoT device!")
             setMetrics(dto.logs || []);
         })
-
-        return () => {
-            unsub();
-        }
+        return () => unsub();
     }, [readyState, jwt]);
 
 
