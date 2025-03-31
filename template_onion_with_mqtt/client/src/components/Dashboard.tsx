@@ -12,8 +12,8 @@ import toast from "react-hot-toast";
 const baseUrl = import.meta.env.VITE_API_BASE_URL
 const prod = import.meta.env.PROD;
 
-export const weatherStationClient = new WeatherStationClient(prod ? "https://" : "http://"+baseUrl);
-export const authClient = new AuthClient(prod ? "https://" : "http://"+baseUrl);
+export const weatherStationClient = new WeatherStationClient(prod ? "https://"+baseUrl : "http://"+baseUrl);
+export const authClient = new AuthClient(prod ? "https://"+baseUrl : "http://"+baseUrl);
 
 export default function AdminDashboard() {
 
