@@ -19,7 +19,8 @@ public static class Extensions
             options.EnableSensitiveDataLogging();
         });
 
-        services.AddScoped<IDataRepository, Repo>();
+        services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IWeatherStationRepository, WeatherStationRepository>();
         services.AddScoped<Seeder>();
 
         return services;

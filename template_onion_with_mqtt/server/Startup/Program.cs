@@ -68,7 +68,6 @@ public class Program
         var document = await app.Services.GetRequiredService<IOpenApiDocumentGenerator>().GenerateAsync("v1");
         var json = document.ToJson();
         await File.WriteAllTextAsync("openapi.json", json);
-
         app.GenerateTypeScriptClient("/../../client/src/generated-client.ts").GetAwaiter().GetResult();
     }
 }

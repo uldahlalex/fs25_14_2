@@ -91,16 +91,16 @@
         }
       }
     },
-    "/JoinLobby": {
-      "post": {
+    "/GetLogs": {
+      "get": {
         "tags": [
-          "VerySimplyKahootWithInMemoryDb"
+          "WeatherStation"
         ],
-        "operationId": "VerySimplyKahootWithInMemoryDb_JoinLobby",
+        "operationId": "WeatherStation_GetLogs",
         "parameters": [
           {
-            "name": "clientId",
-            "in": "query",
+            "name": "authorization",
+            "in": "header",
             "schema": {
               "type": "string"
             },
@@ -111,10 +111,12 @@
           "200": {
             "description": "",
             "content": {
-              "application/octet-stream": {
+              "application/json": {
                 "schema": {
-                  "type": "string",
-                  "format": "binary"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Devicelog"
+                  }
                 }
               }
             }
@@ -122,81 +124,34 @@
         }
       }
     },
-    "/StartGame": {
-      "post": {
+    "/SubscribeToLiveChanges": {
+      "get": {
         "tags": [
-          "VerySimplyKahootWithInMemoryDb"
+          "WeatherStation"
         ],
-        "operationId": "VerySimplyKahootWithInMemoryDb_StartGame",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/PlayThroughRounds": {
-      "post": {
-        "tags": [
-          "VerySimplyKahootWithInMemoryDb"
-        ],
-        "operationId": "VerySimplyKahootWithInMemoryDb_PlayThroughRounds",
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/SubmitAnswer": {
-      "post": {
-        "tags": [
-          "VerySimplyKahootWithInMemoryDb"
-        ],
-        "operationId": "VerySimplyKahootWithInMemoryDb_SubmitAnswer",
+        "operationId": "WeatherStation_SubscribeToLiveChanges",
         "parameters": [
           {
-            "name": "player",
-            "in": "query",
+            "name": "authorization",
+            "in": "header",
             "schema": {
               "type": "string"
             },
             "x-position": 1
-          },
-          {
-            "name": "answer",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "x-position": 2
-          },
-          {
-            "name": "questionId",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 3
           }
         ],
+        "requestBody": {
+          "x-name": "clientId",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
         "responses": {
           "200": {
             "description": "",
@@ -243,6 +198,26 @@
           "password": {
             "type": "string",
             "minLength": 4
+          }
+        }
+      },
+      "Devicelog": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "deviceid": {
+            "type": "string"
+          },
+          "value": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
           }
         }
       },

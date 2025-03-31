@@ -10,5 +10,6 @@
                  Type="Classic C#"/>
         <Project Path="server\Infrastructure.Postgres\Infrastructure.Postgres.csproj" Type="Classic C#"/>
         <Project Path="server\Infrastructure.Websocket\Infrastructure.Websocket.csproj" Type="Classic C#"/>
+        <Project Path="server\Infrastructure.MQTT\Infrastructure.MQTT.csproj" Type="Classic C#"/>
     </Folder>
 </Solution>

@@ -16,7 +16,7 @@ using Microsoft.Extensions.Options;
 
 namespace Application.Services;
 
-public class SecurityService(IOptionsMonitor<AppOptions> optionsMonitor, IDataRepository repository) : ISecurityService
+public class SecurityService(IOptionsMonitor<AppOptions> optionsMonitor, IUserRepository repository) : ISecurityService
 {
     public AuthResponseDto Login(AuthRequestDto dto)
     {
