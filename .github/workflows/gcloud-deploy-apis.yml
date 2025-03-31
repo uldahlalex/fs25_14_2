@@ -25,7 +25,7 @@ jobs:
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v2
         with:
-          service: oniontemplate
+          service: easvweatherstation
           region: europe-north1
           source: template_onion_with_mqtt
           flags: --allow-unauthenticated
