@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Api.Rest;
 using Api.Websocket;
 using Application;
@@ -45,8 +46,9 @@ public class Program
 
     public static async Task ConfigureMiddleware(WebApplication app)
     {
+        var logger = app.Services.GetRequiredService<ILogger<IOptionsMonitor<AppOptions>>>();
         var appOptions = app.Services.GetRequiredService<IOptionsMonitor<AppOptions>>().CurrentValue;
-
+        logger.LogInformation(JsonSerializer.Serialize(appOptions));
         using (var scope = app.Services.CreateScope())
         {
             if (appOptions.Seed)
