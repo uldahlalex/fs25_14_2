@@ -1,105 +1,64 @@
-﻿using Api.Websocket;
-using Application.Interfaces.Infrastructure.Websocket;
+﻿using Application.Interfaces.Infrastructure.Websocket;
 using Infrastructure.Postgres;
 using Infrastructure.Postgres.Scaffolding;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Testing;
+using Infrastructure.Websocket;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Moq;
-using NUnit.Framework;
 using PgCtx;
 using Startup.Proxy;
-using WebSocketBoilerplate;
 
 namespace Startup.Tests.TestUtils;
 
-public class ApiTestBase(ApiTestBaseConfig? apiTestBaseConfig = null)
-    : WebApplicationFactory<Program>
+public static class ApiTestBase
 {
-    private readonly ApiTestBaseConfig _apiTestBaseConfig = apiTestBaseConfig ?? new ApiTestBaseConfig();
-    private readonly PgCtxSetup<MyDbContext> _pgCtxSetup = new();
-    public IConnectionManager ConnectionManager;
-    public MyDbContext DbContext;
-    public HttpClient HttpClient;
-    public ILogger<ApiTestBase> Logger;
-    public IServiceScope Scope;
-    public WsRequestClient WsClient;
-    public string WsClientId;
-
-
-    protected override void ConfigureWebHost(IWebHostBuilder builder)
+    public static IServiceCollection DefaultTestConfig(
+        this IServiceCollection services,
+        bool useTestContainer = true,
+        bool mockProxyConfig = true,
+       // bool makeScopedConnectionManager = true,
+        Action? customSeeder = null
+    )
     {
-        builder.ConfigureServices(ConfigureTestServices);
-    }
-
-
-    private void ConfigureTestServices(WebHostBuilderContext context, IServiceCollection services)
-    {
-        if (_apiTestBaseConfig.UseTestContainer)
+        if (useTestContainer)
         {
+            var db = new PgCtxSetup<MyDbContext>();
             RemoveExistingService<DbContextOptions<MyDbContext>>(services);
             services.AddDbContext<MyDbContext>(opt =>
             {
-                opt.UseNpgsql(_pgCtxSetup._postgres.GetConnectionString());
+                opt.UseNpgsql(db._postgres.GetConnectionString());
                 opt.EnableSensitiveDataLogging();
                 opt.LogTo(_ => { });
             });
         }
 
-        if (_apiTestBaseConfig.MockProxyConfig)
+        if (mockProxyConfig)
         {
             RemoveExistingService<IProxyConfig>(services);
             var mockProxy = new Mock<IProxyConfig>();
             services.AddSingleton(mockProxy.Object);
         }
 
-        if (_apiTestBaseConfig.UseCustomSeeder)
+        // if (makeScopedConnectionManager)
+        // {
+        //     RemoveExistingService<IConnectionManager>(services);
+        //     services.AddScoped<IConnectionManager, WebSocketConnectionManager>();
+        // }
+
+        if (customSeeder is not null)
         {
             RemoveExistingService<ISeeder>(services);
-            services.AddSingleton<ISeeder, TestEnvironmentSeeder>();
+            customSeeder.Invoke();
         }
 
-        if (_apiTestBaseConfig.MockWebSocketService)
-        {
-            var mockWsService = new Mock<IConnectionManager>();
-            services.AddSingleton(mockWsService.Object);
-        }
-    }
+        services.AddTransient<TestWsClient>();
+        return services;
+    }   
 
-    private void RemoveExistingService<T>(IServiceCollection services)
+    private static void RemoveExistingService<T>(IServiceCollection services)
     {
         var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(T));
         if (descriptor != null)
             services.Remove(descriptor);
-    }
-
-    [SetUp]
-    public async Task Setup()
-    {
-        HttpClient = CreateClient();
-
-        //Singletons
-        Logger = Services.GetRequiredService<ILogger<ApiTestBase>>();
-        ConnectionManager = Services.GetRequiredService<IConnectionManager>();
-
-        //Scoped services
-        using var scope = Services.CreateScope();
-        {
-            Scope = Services.CreateScope();
-            DbContext = Scope.ServiceProvider.GetRequiredService<MyDbContext>();
-        }
-
-        var wsPort = Environment.GetEnvironmentVariable("PORT");
-        if (string.IsNullOrEmpty(wsPort)) throw new Exception("Environment variable PORT is not set");
-        WsClientId = Guid.NewGuid().ToString();
-        var url = "ws://localhost:" + wsPort + "?id=" + WsClientId;
-        WsClient = new WsRequestClient(
-            new[] { typeof(ServerSendsErrorMessage).Assembly },
-            url
-        );
-        await WsClient.ConnectAsync();
-        await Task.Delay(1000);
     }
 }

@@ -141,11 +141,11 @@
           }
         ],
         "requestBody": {
-          "x-name": "clientId",
+          "x-name": "dto",
           "content": {
             "application/json": {
               "schema": {
-                "type": "string"
+                "$ref": "#/components/schemas/SubscribeToTopicDto"
               }
             }
           },
@@ -221,6 +221,18 @@
           "timestamp": {
             "type": "string",
             "format": "date-time"
+          }
+        }
+      },
+      "SubscribeToTopicDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "clientId": {
+            "type": "string"
+          },
+          "topic": {
+            "type": "string"
           }
         }
       },

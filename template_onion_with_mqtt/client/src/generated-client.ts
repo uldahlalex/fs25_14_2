@@ -176,11 +176,11 @@ export class WeatherStationClient {
         return Promise.resolve<Devicelog[]>(null as any);
     }
 
-    subscribeToLiveChanges(authorization: string | undefined, clientId: string): Promise<FileResponse> {
+    subscribeToLiveChanges(authorization: string | undefined, dto: SubscribeToTopicDto): Promise<FileResponse> {
         let url_ = this.baseUrl + "/SubscribeToLiveChanges";
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(clientId);
+        const content_ = JSON.stringify(dto);
 
         let options_: RequestInit = {
             body: content_,
@@ -235,6 +235,11 @@ export interface Devicelog {
     id?: string;
     unit?: string;
     timestamp?: Date;
+}
+
+export interface SubscribeToTopicDto {
+    clientId?: string;
+    topic?: string;
 }
 
 export interface ApplicationBaseDto {

@@ -4,11 +4,12 @@ import {Bar, BarChart, CartesianGrid, Legend, Rectangle, ResponsiveContainer, To
 import {
     AuthClient,
     Devicelog, ServerBroadcastsLiveDataToDashboard,
-
+SubscribeToTopicDto,
     StringConstants, WeatherStationClient,
 } from "../generated-client.ts";
 import {randomUid} from "./App.tsx";
 import toast from "react-hot-toast";
+import {ClientWantsToSubscribeToTopicDto} from "ws-request-hook/dist/types/Api";
 const baseUrl = import.meta.env.VITE_API_BASE_URL
 const prod = import.meta.env.PROD;
 
@@ -32,7 +33,11 @@ export default function AdminDashboard() {
     useEffect(() => {
         if (readyState!=1 || jwt ==null || jwt.length<1)
             return;
-        weatherStationClient.subscribeToLiveChanges(jwt, randomUid).then(r => {
+        const subscribeDto: SubscribeToTopicDto = {
+            clientId: randomUid,
+            topic: "dashboard",
+        }
+        weatherStationClient.subscribeToLiveChanges(jwt, subscribeDto).then(r => {
             toast("welcome - you now receive live data from iot devices")
         })
 
