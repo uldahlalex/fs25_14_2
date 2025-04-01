@@ -1,6 +1,8 @@
-name: Fly Deploy
+name: Fly Deploy API
 on:
   push:
+    paths:
+      - '**/server/**'
   workflow_dispatch:
 
 jobs:

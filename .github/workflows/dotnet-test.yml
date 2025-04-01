@@ -1,6 +1,10 @@
+name: .NET Tests
+
 on:
   workflow_dispatch:
   push:
+    paths:
+      - '**/server/**'
 
 jobs:
   local_development:
