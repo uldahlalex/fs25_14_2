@@ -9,4 +9,5 @@ public interface IWeatherStationService
 {
     List<Devicelog> GetDeviceFeed(JwtClaims client);
     Task AddToDbAndBroadcast(DeviceLogDto? dto);
+    Task UpdateDeviceFeed(AdminChangesPreferencesDto dto, JwtClaims claims);
 }

@@ -34,4 +34,14 @@ public class WeatherStationController(
         await connectionManager.AddToTopic(dto.Topic, dto.ClientId);
         return Ok();
     }
+    
+    public const string AdminChangesPreferencesRoute = nameof(AdminChangesPreferences);
+    [HttpPost]
+    [Route(AdminChangesPreferencesRoute)]
+    public async Task<ActionResult> AdminChangesPreferences([FromBody]AdminChangesPreferencesDto dto, [FromHeader]string authorization)
+    {
+        var claims = securityService.VerifyJwtOrThrow(authorization);
+        await weatherStationService.UpdateDeviceFeed(dto, claims);
+        return Ok();
+    }
 }

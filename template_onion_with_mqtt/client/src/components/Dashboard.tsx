@@ -35,7 +35,7 @@ export default function AdminDashboard() {
             return;
         const subscribeDto: SubscribeToTopicDto = {
             clientId: randomUid,
-            topic: "dashboard",
+            topic: StringConstants.Dashboard,
         }
         weatherStationClient.subscribeToLiveChanges(jwt, subscribeDto).then(r => {
             toast("welcome - you now receive live data from iot devices")

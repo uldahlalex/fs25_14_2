@@ -3,6 +3,7 @@ using System.Text.Json;
 using Api.Rest.Controllers;
 using Application.Interfaces;
 using Application.Interfaces.Infrastructure.Websocket;
+using Application.Models;
 using Application.Models.Dtos;
 using Application.Services;
 using Fleck;
@@ -12,6 +13,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+using Startup.Documentation;
 using Startup.Tests.TestUtils;
 using WebSocketBoilerplate;
 
@@ -61,19 +63,8 @@ public class EventTests
         if (initialMembers.Count != 0)
             throw new Exception("Initial members in topic should be 0, but it was: " +
                                 JsonSerializer.Serialize(initialMembers));
-        var registerDto = new AuthRequestDto()
-        {
-            Email = new Random().NextDouble() * 123 + "@gmail.com",
-            Password = new Random().NextDouble() * 123 + "@gmail.com"
-        };
-        var signIn = await _httpClient.PostAsJsonAsync(
-            AuthController.RegisterRoute, registerDto);
-        var authResponseDto = await signIn.Content
-                                  .ReadFromJsonAsync<AuthResponseDto>(new JsonSerializerOptions()
-                                      { PropertyNameCaseInsensitive = true }) ??
-                              throw new Exception("Failed to deserialize " + await signIn.Content.ReadAsStringAsync() +
-                                                  " to " + nameof(AuthResponseDto));
-        _httpClient.DefaultRequestHeaders.Add("Authorization", authResponseDto.Jwt);
+        await ApiTestSetupUtilities.TestRegisterAndAddJwt(_httpClient);
+        
         
         //Act
         var subscribeToTopicRequest = await _httpClient.PostAsJsonAsync(
@@ -97,7 +88,7 @@ public class EventTests
         //Arrange
         var connectionManager = _scopedServiceProvider.GetService<IConnectionManager>();
         var wsClient = _scopedServiceProvider.GetService<TestWsClient>();
-        await connectionManager.AddToTopic("dashboard", wsClient.WsClientId);
+        await connectionManager.AddToTopic(StringConstants.Dashboard, wsClient.WsClientId);
         var deviceId = "TestDevice"+new Random().NextDouble()*1234;
         var testDeviceLogObject = new DeviceLogDto()
         {
@@ -110,7 +101,7 @@ public class EventTests
         await Task.Delay(1000);
         
         //Assert
-        var receivedDtos = wsClient.WsRequestClient.ReceivedMessagesAsJsonStrings
+        var receivedDtos = wsClient.ReceivedMessages
             .Select(str => JsonSerializer.Deserialize<BaseDto>(str));
         
         if (!receivedDtos.Any(baseDto => baseDto.eventType == nameof(ServerBroadcastsLiveDataToDashboard)))

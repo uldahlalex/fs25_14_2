@@ -371,16 +371,16 @@
       },
       "StringConstants": {
         "type": "string",
-        "description": "Available eventType constants",
+        "description": "Available eventType and string constants",
         "enum": [
           "ServerBroadcastsLiveDataToDashboard",
-          "ApplicationBaseDto",
           "MemberLeftNotification",
           "ExampleClientDto",
           "ExampleServerResponse",
           "Ping",
           "Pong",
-          "ServerSendsErrorMessage"
+          "ServerSendsErrorMessage",
+          "Dashboard"
         ]
       }
     }

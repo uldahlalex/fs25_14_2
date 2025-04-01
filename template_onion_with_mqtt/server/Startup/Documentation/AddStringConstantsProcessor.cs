@@ -2,18 +2,18 @@ using Application.Models.Dtos;
 using NJsonSchema;
 using NSwag.Generation.Processors;
 using NSwag.Generation.Processors.Contexts;
+using System.Reflection;
+using Application.Models;
 using WebSocketBoilerplate;
 
 namespace Startup.Documentation;
 
-/// <summary>
-///     I want nswag to include event type names like "ClientWantsToDoX" as simple string constants
-/// </summary>
 public sealed class AddStringConstantsProcessor : IDocumentProcessor
 {
     public void Process(DocumentProcessorContext context)
     {
         var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        
         var derivedTypeNames = assemblies
             .SelectMany(a =>
             {
@@ -26,22 +26,53 @@ public sealed class AddStringConstantsProcessor : IDocumentProcessor
                     return Array.Empty<Type>();
                 }
             })
-              .Where(t =>
+            .Where(t =>
                 t != typeof(BaseDto) &&
                 !t.IsAbstract &&
-                typeof(BaseDto).IsAssignableFrom(t) ||
-                typeof(ApplicationBaseDto).IsAssignableFrom(t)                
+                (typeof(BaseDto).IsAssignableFrom(t) ||
+                typeof(ApplicationBaseDto).IsAssignableFrom(t))                
             )
             .Select(t => t.Name)
-            .ToArray();
+            .ToList();
 
+        var stringConstants = assemblies
+            .SelectMany(a =>
+            {
+                try
+                {
+                    return a.GetTypes();
+                }
+                catch
+                {
+                    return Array.Empty<Type>();
+                }
+            })
+            .Where(type => type.Name == nameof(StringConstants)) 
+            .SelectMany(type => 
+                type.GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
+                    .Where(field => 
+                        field.IsLiteral && 
+                        !field.IsInitOnly && 
+                        field.FieldType == typeof(string)
+                    )
+                    .Select(field => field.GetValue(null)?.ToString())
+            )
+            .Where(constant => constant != null)
+            .Distinct()
+            .ToList();
+
+        var allConstants = derivedTypeNames.Concat(stringConstants).Distinct().ToList();
+        
         var schema = new JsonSchema
         {
             Type = JsonObjectType.String,
-            Description = "Available eventType constants"
+            Description = "Available eventType and string constants"
         };
 
-        foreach (var typeName in derivedTypeNames) schema.Enumeration.Add(typeName);
+        foreach (var constant in allConstants)
+        {
+            schema.Enumeration.Add(constant);
+        }
 
         context.Document.Definitions["StringConstants"] = schema;
     }

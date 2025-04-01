@@ -275,16 +275,16 @@ export interface ServerSendsErrorMessage extends BaseDto {
     message?: string;
 }
 
-/** Available eventType constants */
+/** Available eventType and string constants */
 export enum StringConstants {
     ServerBroadcastsLiveDataToDashboard = "ServerBroadcastsLiveDataToDashboard",
-    ApplicationBaseDto = "ApplicationBaseDto",
     MemberLeftNotification = "MemberLeftNotification",
     ExampleClientDto = "ExampleClientDto",
     ExampleServerResponse = "ExampleServerResponse",
     Ping = "Ping",
     Pong = "Pong",
     ServerSendsErrorMessage = "ServerSendsErrorMessage",
+    Dashboard = "Dashboard",
 }
 
 export interface FileResponse {
