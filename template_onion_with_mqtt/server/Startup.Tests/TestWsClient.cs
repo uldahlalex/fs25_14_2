@@ -21,6 +21,7 @@ public class TestWsClient
         WsClientId = Guid.NewGuid().ToString();
         var url = "ws://localhost:" + wsPort + "?id=" + WsClientId;
         var websocketUrl = new Uri(url);
+        Console.WriteLine("Connecting to websocket at: " + websocketUrl);
         WsClient = new WebsocketClient(websocketUrl);
         
         WsClient.MessageReceived.Subscribe(msg =>
@@ -28,6 +29,8 @@ public class TestWsClient
             ReceivedMessages.Enqueue(msg.Text);
         });
         WsClient.StartOrFail();
+        Task.Delay(1000).GetAwaiter().GetResult();
+
     }
 
 }

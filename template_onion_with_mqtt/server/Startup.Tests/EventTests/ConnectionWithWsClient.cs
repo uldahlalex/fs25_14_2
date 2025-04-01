@@ -51,7 +51,8 @@ public class EventTests
     public async Task WhenConnectingToApi_ServerAddsWsConnection_CanBeRetrievedById()
     {
         var connectionManager = _scopedServiceProvider.GetRequiredService<IConnectionManager>();
-        _ = (IWebSocketConnection)connectionManager.GetSocketFromClientId(_scopedServiceProvider.GetRequiredService<TestWsClient>().WsClientId);
+        var testWsClient = _scopedServiceProvider.GetRequiredService<TestWsClient>();
+        _ = (IWebSocketConnection)connectionManager.GetSocketFromClientId(testWsClient.WsClientId);
     }
 
     [Test]
