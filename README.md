@@ -1,9 +1,9 @@
-
-
 ## Topics
 - Info about Exam + Q&A
-- Deployment revisit (with MQTT & Ping)
+- Deployment revisit (now with Fly io as an alternative to google cloud run)
 - Connection manager revisit
+- Controllers vs Event Handlers and websocket flow of communication revisit
+
 
 ## Slides
 - Link: (coming soon)
@@ -24,4 +24,13 @@ Here are my general guidelines:
 
 If you're unsure whether or not your idea is doable / viable / relevant, please ask me (and possibly also the other elective course teachers if it is a multi-subject product).
 
-## Today's Activity 2: (coming soon)
+## Today's Activity 2: Proficiency in the required tools
+
+The only requirements for Fullstack are onion and websockets. Therefore, assess your progress / proficiency. Make sure you can succesfully do the following things:
+
+- Connect client (browser/postman/etc) to WebSocket API + send messages both ways
+- Use the connection manager to subscribe clients to topics and broadcast to topics
+- Perform database CRUD operations in Onion with repository classes
+- Client app can perform certain action when a message is broadcasted from API
+
+Next Friday the final recap topic will be covered: Software Testing.
