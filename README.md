@@ -4,9 +4,12 @@
 - Connection manager revisit
 - Controllers vs Event Handlers and websocket flow of communication revisit
 
-
 ## Slides
 - Link: (coming soon)
+
+## Second round of individualized development help
+
+Will be Wednesday next week. You can book here: `https://moodle.easv.dk/mod/scheduler/view.php?id=192595` (or simply scroll down here on the Moodle page)
 
 ## Today's materials:
 The code examples from the presentation slides can be found in today's repo's directory *"template_onion_with_mqtt"* **(new connection manager, deployment stuff, pinging, etc.)** 
