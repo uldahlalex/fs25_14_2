@@ -1,26 +1,20 @@
-using System.Net.Http.Json;
 using System.Text.Json;
-using Api.Rest.Controllers;
 using Application.Interfaces;
 using Application.Interfaces.Infrastructure.Websocket;
 using Application.Models;
-using Application.Models.Dtos;
 using Application.Services;
-using Fleck;
 using Infrastructure.MQTT.SubscriptionEventHandlers;
 using Infrastructure.Postgres.Scaffolding;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
-using Startup.Documentation;
 using Startup.Tests.TestUtils;
 using WebSocketBoilerplate;
 
 namespace Startup.Tests.EventTests;
 
 [TestFixture]
-public class EventTests
+public class MqttTriggeredTests
 {
     private HttpClient _httpClient;
     private IServiceProvider _scopedServiceProvider;
@@ -46,43 +40,8 @@ public class EventTests
     {
         _httpClient?.Dispose();
     }
+
     
-    [Test]
-    public async Task WhenConnectingToApi_ServerAddsWsConnection_CanBeRetrievedById()
-    {
-        var connectionManager = _scopedServiceProvider.GetRequiredService<IConnectionManager>();
-        var testWsClient = _scopedServiceProvider.GetRequiredService<TestWsClient>();
-        _ = (IWebSocketConnection)connectionManager.GetSocketFromClientId(testWsClient.WsClientId);
-    }
-
-    [Test]
-    public async Task WhenSubscribingToTopicUsingRestRequest_ResponseIsOkAndConnectionManagerHasAddedToTopic()
-    {   
-        //Arrange
-        var connectionManager = _scopedServiceProvider.GetService<IConnectionManager>();
-        var initialMembers = await connectionManager.GetMembersFromTopicId("dashboard");
-        if (initialMembers.Count != 0)
-            throw new Exception("Initial members in topic should be 0, but it was: " +
-                                JsonSerializer.Serialize(initialMembers));
-        await ApiTestSetupUtilities.TestRegisterAndAddJwt(_httpClient);
-        
-        
-        //Act
-        var subscribeToTopicRequest = await _httpClient.PostAsJsonAsync(
-            WeatherStationController.SubscribeToLiveChangesRoute, new SubscribeToTopicDto()
-            {
-                ClientId = _scopedServiceProvider.GetRequiredService<TestWsClient>().WsClientId,
-                Topic = "dashboard"
-            });
-        
-        //Assert
-        if (!subscribeToTopicRequest.IsSuccessStatusCode)
-            throw new Exception("Http response from subscription request indicates a failure to subscribe: "+ await subscribeToTopicRequest.Content.ReadAsStringAsync());
-        var members = await connectionManager.GetMembersFromTopicId("dashboard");
-        if (members.Count != 1)
-            throw new Exception("Expected exactly one subscriber to topic dashboard, but this is the topic members: "+JsonSerializer.Serialize(members));
-    }
-
     [Test]
     public async Task WhenServerReceivesTimeSeriesData_ServerSavesInDbAndBroadcastsToClient()
     {

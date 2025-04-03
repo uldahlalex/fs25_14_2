@@ -10,6 +10,7 @@ public static class Extensions
     {
         services.AddScoped<ISecurityService, SecurityService>();
         services.AddScoped<IWeatherStationService, WeatherStationService>();
+        services.AddScoped<IWebsocketSubscriptionService, WebsocketSubscriptionService>();
         return services;
     }
 }

@@ -91,6 +91,92 @@
         }
       }
     },
+    "/Subscribe": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "operationId": "Subscription_Subscribe",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "dto",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeSubscriptionDto"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/Unsubscribe": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "operationId": "Subscription_Unsubscribe",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "dto",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeSubscriptionDto"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/GetLogs": {
       "get": {
         "tags": [
@@ -124,12 +210,12 @@
         }
       }
     },
-    "/SubscribeToLiveChanges": {
+    "/AdminChangesPreferences": {
       "post": {
         "tags": [
           "WeatherStation"
         ],
-        "operationId": "WeatherStation_SubscribeToLiveChanges",
+        "operationId": "WeatherStation_AdminChangesPreferences",
         "parameters": [
           {
             "name": "authorization",
@@ -137,7 +223,7 @@
             "schema": {
               "type": "string"
             },
-            "x-position": 1
+            "x-position": 2
           }
         ],
         "requestBody": {
@@ -145,12 +231,12 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/SubscribeToTopicDto"
+                "$ref": "#/components/schemas/AdminChangesPreferencesDto"
               }
             }
           },
           "required": true,
-          "x-position": 2
+          "x-position": 1
         },
         "responses": {
           "200": {
@@ -201,6 +287,21 @@
           }
         }
       },
+      "ChangeSubscriptionDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "clientId": {
+            "type": "string"
+          },
+          "topicIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
       "Devicelog": {
         "type": "object",
         "additionalProperties": false,
@@ -224,14 +325,17 @@
           }
         }
       },
-      "SubscribeToTopicDto": {
+      "AdminChangesPreferencesDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "clientId": {
+          "deviceId": {
             "type": "string"
           },
-          "topic": {
+          "unit": {
+            "type": "string"
+          },
+          "interval": {
             "type": "string"
           }
         }
@@ -380,7 +484,9 @@
           "Ping",
           "Pong",
           "ServerSendsErrorMessage",
-          "Dashboard"
+          "Dashboard",
+          "Device",
+          "ChangePreferences"
         ]
       }
     }

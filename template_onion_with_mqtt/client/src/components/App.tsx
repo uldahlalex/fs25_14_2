@@ -1,6 +1,11 @@
 import {WsClientProvider} from 'ws-request-hook';
 import {useEffect, useState} from "react";
-import AdminDashboard from "./Dashboard.tsx";
+import {useAtom} from "jotai";
+import {JwtAtom} from "../atoms.ts";
+import ApplicationRoutes from "./ApplicationRoutes.tsx";
+import {DevTools} from "jotai-devtools";
+import 'jotai-devtools/styles.css';
+
 const baseUrl = import.meta.env.VITE_API_BASE_URL
 const prod = import.meta.env.PROD
 
@@ -8,23 +13,26 @@ export const randomUid = crypto.randomUUID()
 
 export default function App() {
     
-    const [url, setUrl] = useState<string | undefined>(undefined)
+    const [serverUrl, setServerUrl] = useState<string | undefined>(undefined)
+    const [jwt, setJwt] = useAtom(JwtAtom);
+    
     useEffect(() => {
         const finalUrl = prod ? 'wss://' + baseUrl + '?id=' + randomUid : 'ws://' + baseUrl + '?id=' + randomUid;
-setUrl(finalUrl);
+setServerUrl(finalUrl);
     }, [prod, baseUrl]);
+    
     
     return (<>
 
         {
-            url &&
-        <WsClientProvider url={url}>
-
-            <div className="flex flex-col">
-               <AdminDashboard />
-
-            </div>
+            serverUrl &&
+        <WsClientProvider url={serverUrl}>
+            <ApplicationRoutes/>
         </WsClientProvider>
+        }
+        {
+            !prod &&        <DevTools />
+
         }
     </>)
 }

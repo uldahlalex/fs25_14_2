@@ -2,49 +2,38 @@ import {useWsClient} from "ws-request-hook";
 import {useEffect, useState} from "react";
 import {Bar, BarChart, CartesianGrid, Legend, Rectangle, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
 import {
+    AdminChangesPreferencesDto,
     AuthClient,
-    Devicelog, ServerBroadcastsLiveDataToDashboard,
-SubscribeToTopicDto,
-    StringConstants, WeatherStationClient,
+    Devicelog,
+    ServerBroadcastsLiveDataToDashboard,
+    StringConstants,WeatherStationClient,
 } from "../generated-client.ts";
 import {randomUid} from "./App.tsx";
 import toast from "react-hot-toast";
-import {ClientWantsToSubscribeToTopicDto} from "ws-request-hook/dist/types/Api";
+import {useAtom} from "jotai";
+import {DeviceLogsAtom, JwtAtom} from "../atoms.ts";
+import {authClient, weatherStationClient} from "../apiControllerClients.ts";
+
 const baseUrl = import.meta.env.VITE_API_BASE_URL
 const prod = import.meta.env.PROD;
 
-export const weatherStationClient = new WeatherStationClient(prod ? "https://"+baseUrl : "http://"+baseUrl);
-export const authClient = new AuthClient(prod ? "https://"+baseUrl : "http://"+baseUrl);
+
 
 export default function AdminDashboard() {
 
-    const {onMessage, readyState, sendRequest} = useWsClient()
-    const [metric, setMetrics] = useState<Devicelog[]>([])
-    const [jwt, setJwt] = useState(localStorage.getItem('jwt'))
+    const {onMessage, readyState} = useWsClient()
+    const [deviceLogs, setDeviceLogs] = useAtom(DeviceLogsAtom)
+    const [jwt, setJwt] = useAtom(JwtAtom)
     
-    useEffect(() => {
-        if (jwt == null || jwt.length<1)
-            return;
-        weatherStationClient.getLogs(jwt).then(r => {
-            setMetrics(r || []);
-        })
-    }, [jwt])
 
+    //Broadcast reaction hook
     useEffect(() => {
         if (readyState!=1 || jwt ==null || jwt.length<1)
             return;
-        const subscribeDto: SubscribeToTopicDto = {
-            clientId: randomUid,
-            topic: StringConstants.Dashboard,
-        }
-        weatherStationClient.subscribeToLiveChanges(jwt, subscribeDto).then(r => {
-            toast("welcome - you now receive live data from iot devices")
-        })
-
         const unsub = onMessage<ServerBroadcastsLiveDataToDashboard>(StringConstants.ServerBroadcastsLiveDataToDashboard, (dto) =>  {
             console.log(dto)
             toast("New data from IoT device!")
-            setMetrics(dto.logs || []);
+            setDeviceLogs(dto.logs || []);
         })
         return () => unsub();
     }, [readyState, jwt]);
@@ -52,7 +41,7 @@ export default function AdminDashboard() {
 
     return(<>
         {
-            jwt==null &&       
+            (jwt==null || jwt.length<1) &&       
             <button onClick={() => 
                 authClient.register({email: Math.random()*123+"@gmail.com", password: "123456"}).then(r => {
                     toast("welcome!")
@@ -61,15 +50,15 @@ export default function AdminDashboard() {
         }
     
         <button className="btn" onClick={() => {
-            // const dto: AdminWantsToChangePreferencesForDeviceDto =
-            //     {
-            //         intervalMilliseconds: millis,
-            //         unit: "Celcius", // yes this is hardcoded
-            //         deviceId: "A" //yes, this is hardcoded
-            //     }
-            // httpClient.adminWantsToChangePreferencesForDevice(dto).then(resp => {
-            //     toast('API sent preference change to edge devices')
-            // })
+            const dto: AdminChangesPreferencesDto =
+                {
+                    interval: "Minute",
+                    unit: "Celcius", 
+                    deviceId: "A" 
+                }
+            weatherStationClient.adminChangesPreferences(dto, localStorage.getItem('jwt')!).then(resp => {
+                toast('API sent preference change to edge devices')
+            })
         }}>Change preferences for device</button>
 
 
@@ -77,7 +66,7 @@ export default function AdminDashboard() {
             <BarChart
                 width={500}
                 height={300}
-                data={metric}
+                data={deviceLogs}
                 margin={{
                     top: 5,
                     right: 30,
