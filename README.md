@@ -2,7 +2,9 @@
 ## Today's materials:
 The code examples from the slideshow presentation slides can be found in today's repo's repo.
 
-In fact, I like this repo so much I've decided to deprecate fullstack2025 and the template_onion (can still be accessed, now there's just a warning).
+In fact, I like this repo so much I've decided to deprecate/archive fullstack2025. (Can still be read, but not forked)
+
+The repo "template_onion" still reflects the proposed structure, but is very barebones compared to today's examples.
 
 The codebase is a Weather Station app, but can easily be run without MQTT stuff (there's a conditional that which disables this if there is no broker host defined in appsettings.json).
 
