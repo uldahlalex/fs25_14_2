@@ -1,3 +1,13 @@
+
+## Today's materials:
+The code examples from the slideshow presentation slides can be found in today's repo's repo.
+
+In fact, I like this repo so much I've decided to deprecate fullstack2025 and the template_onion (can still be accessed, now there's just a warning).
+
+The codebase is a Weather Station app, but can easily be run without MQTT stuff (there's a conditional that which disables this if there is no broker host defined in appsettings.json).
+
+It's deployed to Firebase + Fly io and can be accessed here: `https://easvweatherstation.web.app/` or simply clone this repo `https://github.com/uldahlalex/fs25_14_2`
+
 ## Topics
 - Info about Exam + Q&A
 - Deployment revisit (now with Fly io as an alternative to google cloud run)
@@ -11,9 +21,6 @@
 
 Will be Wednesday next week. You can book here: `https://moodle.easv.dk/mod/scheduler/view.php?id=192595` (or simply scroll down here on the Moodle page)
 
-## Today's materials:
-The code examples from the presentation slides can be found in today's repo's directory *"template_onion_with_mqtt"* **(new connection manager, deployment stuff, pinging, etc.)** 
-The codebase is a Weather Station app. (Notice that the workflows for the weather station app are defined in the root for today's lesson folder and not in the "solution folder")
 
 ## Today's Activity 1: Problem Description for Exam Project
 **Task:** Meet with your group (1 person groups are also viable). Figure out what your exam project should be.
