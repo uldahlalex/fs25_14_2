@@ -20,6 +20,7 @@ export default function useSubscribeToTopics() {
             topicIds: [StringConstants.Dashboard],
         };
         subscriptionClient.subscribe(jwt, subscribeDto).then(r => {
+            console.log('hi')
             toast("welcome - you now receive live data from iot devices")
         })
 
