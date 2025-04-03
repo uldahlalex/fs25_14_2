@@ -46,3 +46,4 @@ The only requirements for Fullstack are onion and websockets. Therefore, assess 
 - Client app can perform certain action when a message is broadcasted from API
 
 Next Friday the final recap topic will be covered: Software Testing.
+

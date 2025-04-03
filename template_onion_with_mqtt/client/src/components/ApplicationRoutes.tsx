@@ -13,8 +13,7 @@ import toast from "react-hot-toast";
 import WebsocketConnectionIndicator from "./WebsocketConnectionIndicator.tsx";
 
 export default function ApplicationRoutes() {
-
-
+    
     const navigate = useNavigate();
     const [jwt] = useAtom(JwtAtom);
     useInitializeData();

@@ -24,12 +24,13 @@ export default function AdminDashboard() {
     useEffect(() => {
         if (readyState != 1 || jwt == null || jwt.length < 1)
             return;
-        const unsub = onMessage<ServerBroadcastsLiveDataToDashboard>(StringConstants.ServerBroadcastsLiveDataToDashboard, (dto) => {
+        const reactToMessageSetup = onMessage<ServerBroadcastsLiveDataToDashboard>
+        (StringConstants.ServerBroadcastsLiveDataToDashboard, (dto) => {
             console.log(dto)
             toast("New data from IoT device!")
             setDeviceLogs(dto.logs || []);
         })
-        return () => unsub();
+        return () => reactToMessageSetup();
     }, [readyState, jwt]);
 
 

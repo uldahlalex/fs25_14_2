@@ -9,10 +9,10 @@ namespace Infrastructure.Websocket;
 public sealed class WebSocketConnectionManager : IConnectionManager
 {
     private readonly ILogger<WebSocketConnectionManager> _logger;
-    private readonly ConcurrentDictionary<string, IWebSocketConnection> _connectionIdToSocket = new();
-    private readonly ConcurrentDictionary<string, HashSet<string>> _topicMembers = new();
-    private readonly ConcurrentDictionary<string, HashSet<string>> _memberTopics = new();
-    private readonly ConcurrentDictionary<string, string> _socketToConnectionId = new();
+    private readonly ConcurrentDictionary<string /*Connection ID*/, IWebSocketConnection /*Websocket ID*/> _connectionIdToSocket = new();
+    private readonly ConcurrentDictionary<string, HashSet<string>/*Connection IDs*/ > _topicMembers = new();
+    private readonly ConcurrentDictionary<string/*Connection ID*/, HashSet<string>> _memberTopics = new();
+    private readonly ConcurrentDictionary<string/*Websocket ID*/, string/*Connection ID*/> _socketToConnectionId = new();
         public WebSocketConnectionManager(ILogger<WebSocketConnectionManager> logger)
         {
             _logger = logger;

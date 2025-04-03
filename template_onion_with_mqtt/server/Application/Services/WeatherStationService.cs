@@ -12,31 +12,32 @@ public class WeatherStationService(
     IWeatherStationRepository weatherStationRepository,
     IMqttPublisher mqttPublisher,
     IConnectionManager connectionManager) : IWeatherStationService
-{
+{    
+    public Task AddToDbAndBroadcast(DeviceLogDto? dto)
+     {
+         var deviceLog = new Devicelog()
+         {
+             Timestamp = DateTime.UtcNow,
+             Deviceid = dto.DeviceId,
+             Unit = dto.Unit,
+             Value = dto.Value,
+             Id = Guid.NewGuid().ToString()
+         };
+         weatherStationRepository.AddDeviceLog(deviceLog);
+         var recentLogs = weatherStationRepository.GetRecentLogs();
+         var broadcast = new ServerBroadcastsLiveDataToDashboard()
+         {
+             Logs = recentLogs,
+         };
+         connectionManager.BroadcastToTopic(StringConstants.Dashboard, broadcast);
+         return Task.CompletedTask;
+     }
     public List<Devicelog> GetDeviceFeed(JwtClaims client)
     {
         return weatherStationRepository.GetRecentLogs();
     }
 
-    public Task AddToDbAndBroadcast(DeviceLogDto? dto)
-    {
-        var deviceLog = new Devicelog()
-        {
-            Timestamp = DateTime.UtcNow,
-            Deviceid = dto.DeviceId,
-            Unit = dto.Unit,
-            Value = dto.Value,
-            Id = Guid.NewGuid().ToString()
-        };
-        weatherStationRepository.AddDeviceLog(deviceLog);
-        var recentLogs = weatherStationRepository.GetRecentLogs();
-        var broadcast = new ServerBroadcastsLiveDataToDashboard()
-        {
-            Logs = recentLogs,
-        };
-        connectionManager.BroadcastToTopic(StringConstants.Dashboard, broadcast);
-        return Task.CompletedTask;
-    }
+
 
     public Task UpdateDeviceFeed(AdminChangesPreferencesDto dto, JwtClaims claims)
     {
