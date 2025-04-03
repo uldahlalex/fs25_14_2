@@ -34,6 +34,8 @@ export default function AdminDashboard() {
 
 
     return (<>
+        
+        <h1 className=" text-2xl font-bold mb-4  p-20  ">Data logs from weather station devices</h1>
 
 
         <ResponsiveContainer width="100%" height={400}>

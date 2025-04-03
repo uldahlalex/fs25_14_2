@@ -2,7 +2,10 @@ using System.Text.Json;
 using Api.Rest;
 using Api.Websocket;
 using Application;
+using Application.Interfaces;
+using Application.Interfaces.Infrastructure.MQTT;
 using Application.Models;
+using Infrastructure.Mqtt.PublishingHandlers;
 using Infrastructure.Postgres;
 using Infrastructure.Websocket;
 using Microsoft.Extensions.Options;
@@ -35,7 +38,13 @@ public class Program
 
         services.RegisterWebsocketApiServices();
         services.RegisterRestApiServices();
-        services.RegisterMqttInfrastructure();
+        if(!string.IsNullOrEmpty(appOptions.MQTT_BROKER_HOST))
+            services.RegisterMqttInfrastructure();
+        else
+        {
+            Console.WriteLine("Skipping MQTT service registration: Making sure there is an available mock publisher");
+            services.AddSingleton<IMqttPublisher, MockMqttPublisher>();
+        }
         services.AddOpenApiDocument(conf =>
         {
             conf.DocumentProcessors.Add(new AddAllDerivedTypesProcessor());
@@ -62,7 +71,14 @@ public class Program
             .StartProxyServer(appOptions.PORT, appOptions.REST_PORT, appOptions.WS_PORT);
 
         app.ConfigureRestApi();
-       await app.ConfigureMqtt();
+        if (!string.IsNullOrEmpty(appOptions.MQTT_BROKER_HOST))
+        {
+            await app.ConfigureMqtt();
+        }
+        else
+        {
+            Console.WriteLine("Skipping MQTT service configuration");
+        }
         await app.ConfigureWebsocketApi(appOptions.WS_PORT);
 
 

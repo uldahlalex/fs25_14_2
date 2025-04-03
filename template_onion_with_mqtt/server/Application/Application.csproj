@@ -12,10 +12,11 @@
         <PackageReference Include="Microsoft.Extensions.Options" Version="9.0.1"/>
         <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="9.0.1"/>
         <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.1"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.1"/>
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\Core.Domain\Core.Domain.csproj"/>
     </ItemGroup>
-
+    
 </Project>

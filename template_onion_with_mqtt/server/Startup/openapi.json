@@ -486,7 +486,8 @@
           "ServerSendsErrorMessage",
           "Dashboard",
           "Device",
-          "ChangePreferences"
+          "ChangePreferences",
+          "Log"
         ]
       }
     }
