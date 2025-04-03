@@ -8,21 +8,20 @@ import {JwtAtom} from "../atoms.ts";
 import {subscriptionClient} from "../apiControllerClients.ts";
 
 export default function useSubscribeToTopics() {
-    
+
     const [jwt] = useAtom(JwtAtom);
     const {readyState} = useWsClient();
 
     useEffect(() => {
-        if (readyState!=1 || jwt ==null || jwt.length<1)
+        if (readyState != 1 || jwt == null || jwt.length < 1)
             return;
         const subscribeDto: ChangeSubscriptionDto = {
             clientId: randomUid,
             topicIds: [StringConstants.Dashboard],
         };
         subscriptionClient.subscribe(jwt, subscribeDto).then(r => {
-            console.log('hi')
             toast("welcome - you now receive live data from iot devices")
         })
 
-    })
+    }, [readyState, jwt])
 }

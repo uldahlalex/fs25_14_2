@@ -1,22 +1,13 @@
 import {useWsClient} from "ws-request-hook";
-import {useEffect, useState} from "react";
+import {useEffect} from "react";
 import {Bar, BarChart, CartesianGrid, Legend, Rectangle, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
-import {
-    AdminChangesPreferencesDto,
-    AuthClient,
-    Devicelog,
-    ServerBroadcastsLiveDataToDashboard,
-    StringConstants,WeatherStationClient,
-} from "../generated-client.ts";
-import {randomUid} from "./App.tsx";
+import {ServerBroadcastsLiveDataToDashboard, StringConstants,} from "../generated-client.ts";
 import toast from "react-hot-toast";
 import {useAtom} from "jotai";
 import {DeviceLogsAtom, JwtAtom} from "../atoms.ts";
-import {authClient, weatherStationClient} from "../apiControllerClients.ts";
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL
 const prod = import.meta.env.PROD;
-
 
 
 export default function AdminDashboard() {
@@ -24,13 +15,16 @@ export default function AdminDashboard() {
     const {onMessage, readyState} = useWsClient()
     const [deviceLogs, setDeviceLogs] = useAtom(DeviceLogsAtom)
     const [jwt, setJwt] = useAtom(JwtAtom)
-    
+
+    if (!jwt || jwt.length < 1) {
+        return (<div className="flex flex-col items-center justify-center h-screen">please sign in to continue</div>)
+    }
 
     //Broadcast reaction hook
     useEffect(() => {
-        if (readyState!=1 || jwt ==null || jwt.length<1)
+        if (readyState != 1 || jwt == null || jwt.length < 1)
             return;
-        const unsub = onMessage<ServerBroadcastsLiveDataToDashboard>(StringConstants.ServerBroadcastsLiveDataToDashboard, (dto) =>  {
+        const unsub = onMessage<ServerBroadcastsLiveDataToDashboard>(StringConstants.ServerBroadcastsLiveDataToDashboard, (dto) => {
             console.log(dto)
             toast("New data from IoT device!")
             setDeviceLogs(dto.logs || []);
@@ -39,27 +33,7 @@ export default function AdminDashboard() {
     }, [readyState, jwt]);
 
 
-    return(<>
-        {
-            (jwt==null || jwt.length<1) &&       
-            <button onClick={() => 
-                authClient.register({email: Math.random()*123+"@gmail.com", password: "123456"}).then(r => {
-                    toast("welcome!")
-                    setJwt(r.jwt)
-            })}>Click to register as a test user</button>
-        }
-    
-        <button className="btn" onClick={() => {
-            const dto: AdminChangesPreferencesDto =
-                {
-                    interval: "Minute",
-                    unit: "Celcius", 
-                    deviceId: "A" 
-                }
-            weatherStationClient.adminChangesPreferences(dto, localStorage.getItem('jwt')!).then(resp => {
-                toast('API sent preference change to edge devices')
-            })
-        }}>Change preferences for device</button>
+    return (<>
 
 
         <ResponsiveContainer width="100%" height={400}>
@@ -74,12 +48,13 @@ export default function AdminDashboard() {
                     bottom: 5,
                 }}
             >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="formattedTime" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="value" name="Temperature" fill="#8884d8" activeBar={<Rectangle fill="pink" stroke="blue" />} />
+                <CartesianGrid strokeDasharray="3 3"/>
+                <XAxis dataKey="formattedTime"/>
+                <YAxis/>
+                <Tooltip/>
+                <Legend/>
+                <Bar dataKey="value" name="Temperature" fill="#8884d8"
+                     activeBar={<Rectangle fill="pink" stroke="blue"/>}/>
             </BarChart>
         </ResponsiveContainer>
 
