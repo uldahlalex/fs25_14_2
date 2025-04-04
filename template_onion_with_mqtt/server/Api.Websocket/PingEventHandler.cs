@@ -12,9 +12,6 @@ public class PingEventHandler(IConnectionManager connectionManager) : BaseEventH
 {
     public override Task Handle(Ping dto, IWebSocketConnection socket)
     {
-        var socketId = socket.ConnectionInfo.Id;
-        var clientId = connectionManager.GetSocketFromClientId(socketId.ToString());
-        //use clientId to lookup in the topic dictionaries
         socket.SendDto(new Pong());
         return Task.CompletedTask;
     }
