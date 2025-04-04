@@ -8,10 +8,12 @@ public class Ping : BaseDto;
 
 public class Pong : BaseDto;
 
-public class PingEventHandler(IConnectionManager connectionManager) : BaseEventHandler<Ping>
+public class PingEventHandler(IConnectionManager connectionManager, ILogger<PingEventHandler> logger) : BaseEventHandler<Ping>
 {
     public override Task Handle(Ping dto, IWebSocketConnection socket)
     {
+        var clientId = connectionManager.GetClientIdFromSocket(socket);
+        logger.LogInformation(clientId);
         socket.SendDto(new Pong());
         return Task.CompletedTask;
     }

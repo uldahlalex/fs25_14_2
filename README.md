@@ -17,7 +17,7 @@ It's deployed to Firebase + Fly io and can be accessed here: `https://easvweathe
 - Controllers vs Event Handlers and websocket flow of communication revisit
 
 ## Slides
-- Link: (coming soon)
+- Link: https://docs.google.com/presentation/d/1wpWTdBgHJMMXP8qrWFvUsixkQJybVKdwH9ce2EMMZLM/edit?usp=sharing
 
 ## Second round of individualized development help
 
