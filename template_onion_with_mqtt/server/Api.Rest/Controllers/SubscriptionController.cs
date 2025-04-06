@@ -8,6 +8,7 @@ namespace Api.Rest.Controllers;
 [ApiController]
 public class SubscriptionController(
     ISecurityService securityService, 
+    IConnectionManager connectionManager,
     IWebsocketSubscriptionService websocketSubscriptionService) : ControllerBase
 {
     public const string SubscriptionRoute = nameof(Subscribe);
@@ -29,4 +30,20 @@ public class SubscriptionController(
         await websocketSubscriptionService.UnsubscribeFromTopic(dto.ClientId, dto.TopicIds);
         return Ok();
     }
+
+    public const string ExampleBroadcastRoute = nameof(ExampleBroadcast);
+    [HttpPost]
+    [Route(ExampleBroadcastRoute)]
+
+    public async Task<ActionResult> ExampleBroadcast([FromBody]ExampleBroadcastDto dto)
+    {
+        await connectionManager.BroadcastToTopic("ExampleTopic", dto);
+        return Ok();
+    }
+}
+
+public class ExampleBroadcastDto
+{
+    public string eventType { get; set; } = nameof(ExampleBroadcastDto);
+    public string Message { get; set; }
 }

@@ -177,6 +177,39 @@
         }
       }
     },
+    "/ExampleBroadcast": {
+      "post": {
+        "tags": [
+          "Subscription"
+        ],
+        "operationId": "Subscription_ExampleBroadcast",
+        "requestBody": {
+          "x-name": "dto",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExampleBroadcastDto"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/GetLogs": {
       "get": {
         "tags": [
@@ -299,6 +332,18 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "ExampleBroadcastDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "eventType": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
           }
         }
       },
