@@ -1,3 +1,4 @@
 title: ""
 theme: jekyll-theme-minimal
 markdown: GFM
+mermaid: true
