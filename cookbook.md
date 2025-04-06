@@ -1,13 +1,4 @@
-<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    mermaid.initialize({ 
-      startOnLoad: true,
-      theme: 'default',
-      securityLevel: 'loose'
-    });
-  });
-</script>
+
 
 # The cookbook for fs25
 
