@@ -8,51 +8,99 @@ $main-font: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sa
 $content-width: 800px;
 
 .mermaid {
-  background: #1e1e1e;
-  padding: 20px;
-  border-radius: 8px;
-  margin: 20px 0;
+  // Background and container styling
+  background: #1e1e1e !important;
+  padding: 20px !important;
+  border-radius: 8px !important;
+  margin: 20px 0 !important;
+  width: 100% !important;
   
-  // Increase text contrast and size
-  text {
+  // General text styling
+  * {
     font-family: $main-font !important;
-    font-size: 14px !important;
-    fill: #ffffff !important;
   }
 
-  // Style the actor boxes
+  // Actor boxes
   .actor {
     fill: #2d2d2d !important;
     stroke: #BB86FC !important;
+    stroke-width: 2px !important;
   }
 
-  // Style the actor text
-  .actor text {
+  // Actor text
+  .actor text,
+  text.actor {
     fill: #ffffff !important;
+    font-size: 16px !important;
     font-weight: 500 !important;
   }
 
-  // Style the arrows and lines
-  .messageLine0, 
+  // Lines and arrows
+  .messageLine0,
   .messageLine1 {
     stroke: #BB86FC !important;
     stroke-width: 2px !important;
   }
 
-  // Style the message text
+  // Message text
   .messageText {
     fill: #ffffff !important;
+    font-size: 14px !important;
     font-weight: 400 !important;
   }
 
-  // Style the notes
+  // Notes
   .note {
     fill: #2d2d2d !important;
     stroke: #03DAC6 !important;
+    stroke-width: 2px !important;
   }
 
   .noteText {
     fill: #ffffff !important;
+    font-size: 14px !important;
     font-weight: 400 !important;
+
+    tspan {
+      fill: #ffffff !important;
+      font-size: 14px !important;
+    }
   }
+
+  // Activation boxes
+  .activation0 {
+    fill: #BB86FC !important;
+    stroke: #BB86FC !important;
+  }
+
+  // Participants
+  .participant {
+    stroke: #BB86FC !important;
+    fill: #2d2d2d !important;
+  }
+
+  // All diagram text
+  text {
+    fill: #ffffff !important;
+    font-family: $main-font !important;
+  }
+
+  // Additional spacing
+  .actor-line {
+    stroke-width: 2px !important;
+    stroke: #BB86FC !important;
+  }
+
+  // Make sure SVG takes full width
+  svg {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+  }
+}
+
+// Add some spacing around the diagram
+.language-mermaid {
+  margin: 2em 0 !important;
+  overflow-x: auto !important;
 }
