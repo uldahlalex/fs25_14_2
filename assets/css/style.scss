@@ -20,3 +20,36 @@ header {
 footer {
   display: none !important;
 }
+
+.mermaid {
+  background-color: #1e1e1e;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+  min-width: 100%;
+}
+
+// Increase text size
+.mermaid text {
+  font-size: 16px !important;
+}
+
+// Add some spacing between elements
+.mermaid .actor {
+  margin: 10px !important;
+}
+
+// Make the lines more visible
+.mermaid .messageLine0,
+.mermaid .messageLine1 {
+  stroke-width: 2px !important;
+}
+
+.mermaid {
+  width: 100%;
+  overflow-x: auto;
+  svg {
+    max-width: 100%;
+    height: auto;
+  }
+}
