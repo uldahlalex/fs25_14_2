@@ -35,6 +35,9 @@ public class WsOnlyTests
         _httpClient?.Dispose();
     }
     
+    /// <summary>
+    /// 
+    /// </summary>
     [Test]
     public async Task WhenConnectingToApi_ServerAddsWsConnection_CanBeRetrievedById()
     {

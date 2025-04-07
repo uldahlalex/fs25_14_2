@@ -3,7 +3,7 @@
 # The cookbook for fs25
 
 ```mermaid
-%% ./assets/diagrams/broadcast.mmd
+%% ./assets/diagrams/connect-subscribe-broadcast.mmd
 
 sequenceDiagram
     participant C as Client
