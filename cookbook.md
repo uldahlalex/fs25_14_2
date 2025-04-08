@@ -5,6 +5,7 @@
 ```mermaid
 %% ./assets/diagrams/connect-subscribe-broadcast.mmd
 
+%%{init: {'theme': 'dark', 'themeVariables': { 'background': '#000000', 'primaryTextColor': '#ffffff', 'primaryColor': '#ffffff', 'noteTextColor': '#ffffff', 'noteBkgColor': '#333333', 'sequenceNumberColor': '#ffffff', 'actorLineColor': '#ffffff', 'actorBorder': '#ffffff', 'signalColor': '#ffffff', 'textColor': '#ffffff', 'loopTextColor': '#ffffff', 'activationBorderColor': '#ffffff' }}}%%
 sequenceDiagram
     participant C as Client
     participant WS as WebSocket Server
@@ -41,5 +42,4 @@ sequenceDiagram
     CM ->> CM: Remove connection mappings
     Note over CM: Topic subscriptions preserved
     deactivate WS
-
 ```
