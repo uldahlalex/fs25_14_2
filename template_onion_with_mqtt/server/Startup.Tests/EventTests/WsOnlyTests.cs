@@ -1,5 +1,7 @@
 using Application.Interfaces.Infrastructure.Websocket;
+using Core.Domain.Entities;
 using Fleck;
+using Infrastructure.Postgres.Scaffolding;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -35,9 +37,7 @@ public class WsOnlyTests
         _httpClient?.Dispose();
     }
     
-    /// <summary>
-    /// 
-    /// </summary>
+
     [Test]
     public async Task WhenConnectingToApi_ServerAddsWsConnection_CanBeRetrievedById()
     {

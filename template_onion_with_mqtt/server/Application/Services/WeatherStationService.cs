@@ -5,10 +5,14 @@ using Application.Interfaces.Infrastructure.Websocket;
 using Application.Models;
 using Core.Domain.Entities;
 using Infrastructure.MQTT.SubscriptionEventHandlers;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Application.Services;
 
 public class WeatherStationService(
+    IOptionsMonitor<AppOptions> optionsMonitor,
+    ILogger<WeatherStationService> logger,
     IWeatherStationRepository weatherStationRepository,
     IMqttPublisher mqttPublisher,
     IConnectionManager connectionManager) : IWeatherStationService
