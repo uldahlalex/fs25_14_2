@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Text.Encodings.Web;
 using System.Text.Json;
 using HiveMQtt.Client;
 
@@ -6,10 +7,6 @@ namespace Startup.Tests;
 
 public class TestMqttClient
 {
-    public string DeviceId { get;  } = Guid.NewGuid().ToString();
-    public HiveMQClient MqttClient { get; }
-    public ConcurrentQueue<string> ReceivedMessages { get; } = new();
-    
     public TestMqttClient(string host, string username, string password)
     {
         var options = new HiveMQClientOptionsBuilder()
@@ -31,20 +28,22 @@ public class TestMqttClient
         MqttClient = new HiveMQClient(options);
         MqttClient.OnMessageReceived += (_, args) =>
         {
-            
             var jsonSerializerOptions = new JsonSerializerOptions
             {
                 WriteIndented = true,
                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping
             };
 
             var jsonElement = JsonSerializer.Deserialize<JsonElement>(args.PublishMessage.PayloadAsString);
-            var stringRepresentation =  JsonSerializer.Serialize(jsonElement, jsonSerializerOptions);
+            var stringRepresentation = JsonSerializer.Serialize(jsonElement, jsonSerializerOptions);
             ReceivedMessages.Enqueue(stringRepresentation);
             Console.WriteLine($"Received message: {stringRepresentation}");
         };
         MqttClient.ConnectAsync().GetAwaiter().GetResult();
-
     }
+
+    public string DeviceId { get; } = Guid.NewGuid().ToString();
+    public HiveMQClient MqttClient { get; }
+    public ConcurrentQueue<string> ReceivedMessages { get; } = new();
 }

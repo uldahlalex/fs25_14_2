@@ -1,7 +1,6 @@
-using Application.Models.Dtos;
 using Core.Domain.Entities;
 
-namespace Application.Services;
+namespace Application.Models.Dtos.BroadcastModels;
 
 public class ServerBroadcastsLiveDataToDashboard : ApplicationBaseDto
 {

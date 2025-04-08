@@ -1,10 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
 using Api.Rest.Controllers;
-using Application.Models.Dtos;
+using Application.Models.Dtos.RestDtos;
 using Infrastructure.Postgres.Scaffolding;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -14,6 +13,13 @@ namespace Startup.Tests.Auth;
 
 public class AuthTests : WebApplicationFactory<Program>
 {
+    private const string TestUsername = "bob@bob.dk";
+    private const string TestPassword = "asdASD123,-.";
+    private const string TestSalt = "5cbd23b9-0cb4-4afe-8497-c81bc6691a42";
+
+    private const string TestHash =
+        "J4SHSN9SKisNBoijKZkNAA5GNWJlO/RNsiXWhoWq2lOpd7hBtmwnqb6bOcxxYP8tEvNRomJunrVkWKNa5W3lXg==";
+
     private HttpClient _httpClient;
     private IServiceProvider _scopedServiceProvider;
 
@@ -22,24 +28,13 @@ public class AuthTests : WebApplicationFactory<Program>
     {
         _httpClient = CreateClient();
         _scopedServiceProvider = Services.CreateScope().ServiceProvider;
-
     }
 
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureServices(services =>
-        {
-            services.DefaultTestConfig();
-        });
+        builder.ConfigureServices(services => { services.DefaultTestConfig(); });
     }
-
-    private const string TestUsername = "bob@bob.dk";
-    private const string TestPassword = "asdASD123,-.";
-    private const string TestSalt = "5cbd23b9-0cb4-4afe-8497-c81bc6691a42";
-
-    private const string TestHash =
-        "J4SHSN9SKisNBoijKZkNAA5GNWJlO/RNsiXWhoWq2lOpd7hBtmwnqb6bOcxxYP8tEvNRomJunrVkWKNa5W3lXg==";
 
 
     [Test]

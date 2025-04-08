@@ -1,7 +1,7 @@
-﻿using Application.Interfaces.Infrastructure.Postgres;
-using Application.Models;
+﻿using Application.Models;
+using Application.Models.Dtos.MqttSubscriptionDto;
+using Application.Models.Dtos.RestDtos;
 using Core.Domain.Entities;
-using Infrastructure.MQTT.SubscriptionEventHandlers;
 
 namespace Application.Interfaces;
 

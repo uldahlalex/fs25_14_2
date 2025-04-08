@@ -6,7 +6,11 @@ namespace Infrastructure.Postgres.Postgresql.Data;
 
 public class WeatherStationRepository(MyDbContext ctx) : IWeatherStationRepository
 {
-    public List<Devicelog> GetRecentLogs() => ctx.Devicelogs.ToList();
+    public List<Devicelog> GetRecentLogs()
+    {
+        return ctx.Devicelogs.ToList();
+    }
+
     public Devicelog AddDeviceLog(Devicelog deviceLog)
     {
         ctx.Devicelogs.Add(deviceLog);

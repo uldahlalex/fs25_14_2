@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Application.Models.Dtos;
+namespace Application.Models.Dtos.RestDtos;
 
 public class AuthResponseDto
 {

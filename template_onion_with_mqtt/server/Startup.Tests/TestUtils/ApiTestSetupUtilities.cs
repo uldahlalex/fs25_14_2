@@ -1,12 +1,10 @@
 ﻿using System.Net.Http.Json;
 using System.Text.Json;
 using Api.Rest.Controllers;
-using Application.Interfaces.Infrastructure.Websocket;
 using Application.Models;
-using Application.Models.Dtos;
+using Application.Models.Dtos.RestDtos;
 using Infrastructure.Postgres;
 using Infrastructure.Postgres.Scaffolding;
-using Infrastructure.Websocket;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -52,11 +50,7 @@ public static class ApiTestSetupUtilities
             customSeeder.Invoke();
         }
 
-        if (makeWsClient)
-        {
-            services.AddScoped<TestWsClient>();
-
-        }
+        if (makeWsClient) services.AddScoped<TestWsClient>();
         if (makeMqttClient)
         {
             RemoveExistingService<TestMqttClient>(services);
@@ -66,8 +60,9 @@ public static class ApiTestSetupUtilities
                 return new TestMqttClient(options.MQTT_BROKER_HOST, options.MQTT_USERNAME, options.MQTT_PASSWORD);
             });
         }
+
         return services;
-    }   
+    }
 
     private static void RemoveExistingService<T>(IServiceCollection services)
     {
@@ -78,7 +73,7 @@ public static class ApiTestSetupUtilities
 
     public static async Task<AuthResponseDto> TestRegisterAndAddJwt(HttpClient httpClient)
     {
-        var registerDto = new AuthRequestDto()
+        var registerDto = new AuthRequestDto
         {
             Email = new Random().NextDouble() * 123 + "@gmail.com",
             Password = new Random().NextDouble() * 123 + "@gmail.com"
@@ -86,7 +81,7 @@ public static class ApiTestSetupUtilities
         var signIn = await httpClient.PostAsJsonAsync(
             AuthController.RegisterRoute, registerDto);
         var authResponseDto = await signIn.Content
-                                  .ReadFromJsonAsync<AuthResponseDto>(new JsonSerializerOptions()
+                                  .ReadFromJsonAsync<AuthResponseDto>(new JsonSerializerOptions
                                       { PropertyNameCaseInsensitive = true }) ??
                               throw new Exception("Failed to deserialize " + await signIn.Content.ReadAsStringAsync() +
                                                   " to " + nameof(AuthResponseDto));

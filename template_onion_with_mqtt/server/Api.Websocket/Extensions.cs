@@ -38,7 +38,7 @@ public static class Extensions
             using var scope = app.Services.CreateScope();
             var manager = scope.ServiceProvider.GetRequiredService<IConnectionManager>();
 
-   
+
             ws.OnOpen = () => manager.OnOpen(ws, id);
             ws.OnClose = () => manager.OnClose(ws, id);
             ws.OnError = ex => ws.SendDto(new ServerSendsErrorMessage { Message = ex.Message });

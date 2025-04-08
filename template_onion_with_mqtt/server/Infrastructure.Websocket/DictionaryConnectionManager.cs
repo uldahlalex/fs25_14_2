@@ -1,46 +1,47 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
+using Application.Interfaces.Infrastructure.Websocket;
 using Fleck;
 using Microsoft.Extensions.Logging;
-using Application.Interfaces.Infrastructure.Websocket;
 
 namespace Infrastructure.Websocket;
 
 public sealed class WebSocketConnectionManager : IConnectionManager
 {
+    private readonly ConcurrentDictionary<string /*Connection ID*/, IWebSocketConnection /*Websocket ID*/>
+        _connectionIdToSocket = new();
+
     private readonly ILogger<WebSocketConnectionManager> _logger;
-    private readonly ConcurrentDictionary<string /*Connection ID*/, IWebSocketConnection /*Websocket ID*/> _connectionIdToSocket = new();
-    private readonly ConcurrentDictionary<string, HashSet<string>/*Connection IDs*/ > _topicMembers = new();
-    private readonly ConcurrentDictionary<string/*Connection ID*/, HashSet<string>> _memberTopics = new();
-    private readonly ConcurrentDictionary<string/*Websocket ID*/, string/*Connection ID*/> _socketToConnectionId = new();
-        public WebSocketConnectionManager(ILogger<WebSocketConnectionManager> logger)
-        {
-            _logger = logger;
-        }
+    private readonly ConcurrentDictionary<string /*Connection ID*/, HashSet<string>> _memberTopics = new();
+
+    private readonly ConcurrentDictionary<string /*Websocket ID*/, string /*Connection ID*/> _socketToConnectionId =
+        new();
+
+    private readonly ConcurrentDictionary<string, HashSet<string> /*Connection IDs*/> _topicMembers = new();
+
+    public WebSocketConnectionManager(ILogger<WebSocketConnectionManager> logger)
+    {
+        _logger = logger;
+    }
 
 
-        public ConcurrentDictionary<string, object> GetConnectionIdToSocketDictionary()
-        {
-            var idToSocket = new ConcurrentDictionary<string, object>();
-            foreach (var (key, value) in _connectionIdToSocket)
-            {
-                idToSocket.TryAdd(key, value);
-            }
+    public ConcurrentDictionary<string, object> GetConnectionIdToSocketDictionary()
+    {
+        var idToSocket = new ConcurrentDictionary<string, object>();
+        foreach (var (key, value) in _connectionIdToSocket) idToSocket.TryAdd(key, value);
 
-            return idToSocket;
-        }
+        return idToSocket;
+    }
 
-        public ConcurrentDictionary<string, string> GetSocketIdToClientIdDictionary()
-        {
-            return _socketToConnectionId;
-        }
+    public ConcurrentDictionary<string, string> GetSocketIdToClientIdDictionary()
+    {
+        return _socketToConnectionId;
+    }
 
-        public async Task OnOpen(object socket, string clientId)
+    public async Task OnOpen(object socket, string clientId)
     {
         if (socket is not IWebSocketConnection webSocket)
-        {
             throw new ArgumentException("Socket must be an IWebSocketConnection", nameof(socket));
-        }
 
         _logger.LogDebug("OnOpen called with clientId: {ClientId}", clientId);
 
@@ -48,7 +49,7 @@ public sealed class WebSocketConnectionManager : IConnectionManager
         if (_connectionIdToSocket.TryRemove(clientId, out var oldSocket))
         {
             _socketToConnectionId.TryRemove(oldSocket.ConnectionInfo.Id.ToString(), out _);
-            _logger.LogInformation("Removed old connection {SocketId} for client {ClientId}", 
+            _logger.LogInformation("Removed old connection {SocketId} for client {ClientId}",
                 oldSocket.ConnectionInfo.Id, clientId);
         }
 
@@ -58,12 +59,8 @@ public sealed class WebSocketConnectionManager : IConnectionManager
 
         // Resubscribe to previous topics if any
         if (_memberTopics.TryGetValue(clientId, out var topics))
-        {
             foreach (var topic in topics)
-            {
                 await AddToTopic(topic, clientId);
-            }
-        }
 
         await LogCurrentState();
     }
@@ -71,9 +68,7 @@ public sealed class WebSocketConnectionManager : IConnectionManager
     public async Task OnClose(object socket, string clientId)
     {
         if (socket is not IWebSocketConnection webSocket)
-        {
             throw new ArgumentException("Socket must be an IWebSocketConnection", nameof(socket));
-        }
 
         var socketId = webSocket.ConnectionInfo.Id.ToString();
         _logger.LogDebug("OnClose called with clientId: {ClientId} and socketId: {SocketId}", clientId, socketId);
@@ -81,9 +76,7 @@ public sealed class WebSocketConnectionManager : IConnectionManager
         // Remove socket mappings
         if (_connectionIdToSocket.TryGetValue(clientId, out var currentSocket) &&
             currentSocket.ConnectionInfo.Id.ToString() == socketId)
-        {
             _connectionIdToSocket.TryRemove(clientId, out _);
-        }
         _socketToConnectionId.TryRemove(socketId, out _);
 
         // Note: We don't remove topic subscriptions on disconnect to allow for reconnection
@@ -127,10 +120,7 @@ public sealed class WebSocketConnectionManager : IConnectionManager
                 return newSet;
             });
 
-        if (_topicMembers.TryGetValue(topic, out var members) && !members.Any())
-        {
-            _topicMembers.TryRemove(topic, out _);
-        }
+        if (_topicMembers.TryGetValue(topic, out var members) && !members.Any()) _topicMembers.TryRemove(topic, out _);
 
         _memberTopics.AddOrUpdate(
             memberId,
@@ -143,9 +133,7 @@ public sealed class WebSocketConnectionManager : IConnectionManager
             });
 
         if (_memberTopics.TryGetValue(memberId, out var topics) && !topics.Any())
-        {
             _memberTopics.TryRemove(memberId, out _);
-        }
 
         await LogCurrentState();
     }
@@ -161,19 +149,14 @@ public sealed class WebSocketConnectionManager : IConnectionManager
         var membersList = members.ToList();
         foreach (var memberId in membersList)
         {
-            if (!_connectionIdToSocket.TryGetValue(memberId, out var socket))
-            {
-                continue; // Skip offline members but don't remove their subscription
-            }
+            if (!_connectionIdToSocket.TryGetValue(memberId,
+                    out var socket)) continue; // Skip offline members but don't remove their subscription
 
-            if (!socket.IsAvailable)
-            {
-                continue; // Skip unavailable sockets but don't remove their subscription
-            }
+            if (!socket.IsAvailable) continue; // Skip unavailable sockets but don't remove their subscription
 
             try
             {
-                var json = JsonSerializer.Serialize(message, 
+                var json = JsonSerializer.Serialize(message,
                     new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
                 await socket.Send(json);
                 _logger.LogDebug("Sent message to client {ClientId} on topic {Topic}", memberId, topic);
@@ -204,24 +187,17 @@ public sealed class WebSocketConnectionManager : IConnectionManager
     public string GetClientIdFromSocket(object socket)
     {
         if (socket is not IWebSocketConnection webSocket)
-        {
             throw new ArgumentException("Socket must be an IWebSocketConnection", nameof(socket));
-        }
 
         if (_socketToConnectionId.TryGetValue(webSocket.ConnectionInfo.Id.ToString(), out var clientId))
-        {
             return clientId;
-        }
-        throw new Exception("Could not find clientId for socket: "+webSocket.ConnectionInfo.Id);
+        throw new Exception("Could not find clientId for socket: " + webSocket.ConnectionInfo.Id);
     }
 
     public object GetSocketFromClientId(string clientId)
     {
-        if (_connectionIdToSocket.TryGetValue(clientId, out var socket))
-        {
-            return socket;
-        }
-        throw new Exception("Could not find socket for clientId: "+clientId);
+        if (_connectionIdToSocket.TryGetValue(clientId, out var socket)) return socket;
+        throw new Exception("Could not find socket for clientId: " + clientId);
     }
 
     private async Task LogCurrentState()
@@ -235,7 +211,7 @@ public sealed class WebSocketConnectionManager : IConnectionManager
                 MemberSubscriptions = _memberTopics
             };
 
-            _logger.LogDebug("Current state: {State}", 
+            _logger.LogDebug("Current state: {State}",
                 JsonSerializer.Serialize(state, new JsonSerializerOptions { WriteIndented = true }));
         }
         catch (Exception ex)

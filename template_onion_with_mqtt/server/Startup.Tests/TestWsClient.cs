@@ -1,19 +1,13 @@
 using System.Collections.Concurrent;
-using Api.Websocket;
 using Websocket.Client;
-using WebSocketBoilerplate;
 
 namespace Startup.Tests;
 
 /// <summary>
-/// Service to add to DI with all the WS client details
+///     Service to add to DI with all the WS client details
 /// </summary>
 public class TestWsClient
 {
-    public WebsocketClient WsClient { get; set; }
-    public string WsClientId { get; set; }
-    public ConcurrentQueue<string> ReceivedMessages { get; } = new();
-
     public TestWsClient()
     {
         var wsPort = Environment.GetEnvironmentVariable("PORT");
@@ -23,14 +17,13 @@ public class TestWsClient
         var websocketUrl = new Uri(url);
         Console.WriteLine("Connecting to websocket at: " + websocketUrl);
         WsClient = new WebsocketClient(websocketUrl);
-        
-        WsClient.MessageReceived.Subscribe(msg =>
-        {
-            ReceivedMessages.Enqueue(msg.Text);
-        });
+
+        WsClient.MessageReceived.Subscribe(msg => { ReceivedMessages.Enqueue(msg.Text); });
         WsClient.StartOrFail();
         Task.Delay(1000).GetAwaiter().GetResult();
-
     }
 
+    public WebsocketClient WsClient { get; set; }
+    public string WsClientId { get; set; }
+    public ConcurrentQueue<string> ReceivedMessages { get; } = new();
 }

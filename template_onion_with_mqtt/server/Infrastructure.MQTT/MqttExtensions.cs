@@ -4,11 +4,9 @@ using Application.Models;
 using HiveMQtt.Client;
 using HiveMQtt.Client.Exceptions;
 using HiveMQtt.MQTT5.Types;
-using Infrastructure.Mqtt;
-using Infrastructure.Mqtt.PublishingHandlers;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
+namespace Infrastructure.MQTT;
 
 public static class MqttExtensions
 {
@@ -49,8 +47,7 @@ public static class MqttExtensions
             };
 
             const int maxRetries = 5;
-            for (int attempt = 1; attempt <= maxRetries; attempt++)
-            {
+            for (var attempt = 1; attempt <= maxRetries; attempt++)
                 try
                 {
                     logger.LogInformation("Attempting to connect to MQTT broker (attempt {attempt}/{maxRetries})",
@@ -76,7 +73,6 @@ public static class MqttExtensions
                         logger.LogError("Max retries reached");
                     Thread.Sleep(TimeSpan.FromSeconds(Math.Pow(2, attempt)));
                 }
-            }
 
             return client;
         });
@@ -84,10 +80,7 @@ public static class MqttExtensions
         var subscribeHandlers = typeof(IMqttMessageHandler).Assembly
             .GetTypes()
             .Where(t => !t.IsAbstract && typeof(IMqttMessageHandler).IsAssignableFrom(t));
-        foreach (var handlerType in subscribeHandlers)
-        {
-            services.AddScoped(handlerType);
-        }
+        foreach (var handlerType in subscribeHandlers) services.AddScoped(handlerType);
 
         services.AddSingleton<IMqttPublisher, MqttPublisher>();
         return services;
@@ -106,7 +99,6 @@ public static class MqttExtensions
 
         //here we're subscribing to each handler
         foreach (var handlerType in handlerTypes)
-        {
             using (var scope = app.Services.CreateScope())
             {
                 var handler = (IMqttMessageHandler)scope.ServiceProvider
@@ -125,7 +117,6 @@ public static class MqttExtensions
                         messageHandler.Handle(sender, args);
                     });
             }
-        }
 
         await mqttClient.SubscribeAsync(builder.Build());
         return app;

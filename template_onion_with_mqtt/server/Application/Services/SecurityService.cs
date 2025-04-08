@@ -5,7 +5,7 @@ using System.Text;
 using Application.Interfaces;
 using Application.Interfaces.Infrastructure.Postgres;
 using Application.Models;
-using Application.Models.Dtos;
+using Application.Models.Dtos.RestDtos;
 using Application.Models.Enums;
 using Core.Domain.Entities;
 using JWT;

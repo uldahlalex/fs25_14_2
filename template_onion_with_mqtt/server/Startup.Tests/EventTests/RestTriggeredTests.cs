@@ -1,10 +1,9 @@
 using System.Net.Http.Json;
 using System.Text.Json;
 using Api.Rest.Controllers;
-using Application.Interfaces;
 using Application.Interfaces.Infrastructure.Websocket;
 using Application.Models;
-using Application.Models.Dtos;
+using Application.Models.Dtos.RestDtos;
 using HiveMQtt.MQTT5.Types;
 using KellermanSoftware.CompareNetObjects;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -17,19 +16,13 @@ namespace Startup.Tests.EventTests;
 [TestFixture]
 public class RestTriggeredTests
 {
-    private HttpClient _httpClient;
-    private IServiceProvider _scopedServiceProvider;
-
     [SetUp]
     public void Setup()
     {
         var factory = new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
             {
-                builder.ConfigureServices(services =>
-                {
-                    services.DefaultTestConfig();
-                });
+                builder.ConfigureServices(services => { services.DefaultTestConfig(); });
             });
 
         _httpClient = factory.CreateClient();
@@ -42,9 +35,12 @@ public class RestTriggeredTests
         _httpClient?.Dispose();
     }
 
+    private HttpClient _httpClient;
+    private IServiceProvider _scopedServiceProvider;
+
     [Test]
     public async Task WhenSubscribingToTopicUsingRestRequest_ResponseIsOkAndConnectionManagerHasAddedToTopic()
-    {   
+    {
         //Arrange
         var connectionManager = _scopedServiceProvider.GetService<IConnectionManager>();
         var initialMembers = await connectionManager.GetMembersFromTopicId(StringConstants.Dashboard);
@@ -52,25 +48,27 @@ public class RestTriggeredTests
             throw new Exception("Initial members in topic should be 0, but it was: " +
                                 JsonSerializer.Serialize(initialMembers));
         await ApiTestSetupUtilities.TestRegisterAndAddJwt(_httpClient);
-        
-        
+
+
         //Act
         var subscribeToTopicRequest = await _httpClient.PostAsJsonAsync(
-            SubscriptionController.SubscriptionRoute, new ChangeSubscriptionDto()
+            SubscriptionController.SubscriptionRoute, new ChangeSubscriptionDto
             {
                 ClientId = _scopedServiceProvider.GetRequiredService<TestWsClient>().WsClientId,
-                TopicIds = new List<string>() { StringConstants.Dashboard }
+                TopicIds = new List<string> { StringConstants.Dashboard }
             });
-        
+
         //Assert
         if (!subscribeToTopicRequest.IsSuccessStatusCode)
-            throw new Exception("Http response from subscription request indicates a failure to subscribe: "+ await subscribeToTopicRequest.Content.ReadAsStringAsync());
+            throw new Exception("Http response from subscription request indicates a failure to subscribe: " +
+                                await subscribeToTopicRequest.Content.ReadAsStringAsync());
         var members = await connectionManager.GetMembersFromTopicId(StringConstants.Dashboard);
         if (members.Count != 1)
-            throw new Exception("Expected exactly one subscriber to topic "+StringConstants.Dashboard+", but this is the topic members: "+JsonSerializer.Serialize(members));
+            throw new Exception("Expected exactly one subscriber to topic " + StringConstants.Dashboard +
+                                ", but this is the topic members: " + JsonSerializer.Serialize(members));
     }
-    
-    
+
+
     [Test]
     public async Task WhenAdminChangesDevicePreferencesFromWebDashboard_MqttClientPublishesToEdgeDevice()
     {
@@ -94,14 +92,15 @@ public class RestTriggeredTests
 
         //Act
         await ApiTestSetupUtilities.TestRegisterAndAddJwt(_httpClient);
-        _ = await _httpClient.PostAsJsonAsync(WeatherStationController.AdminChangesPreferencesRoute, changePrefernecesDto);
+        _ = await _httpClient.PostAsJsonAsync(WeatherStationController.AdminChangesPreferencesRoute,
+            changePrefernecesDto);
         await Task.Delay(1000); // Hardcoded delay to account for network overhead to the edge device
-        
-        var actualObjectReceivedByMqttDevice = JsonSerializer.Deserialize<AdminChangesPreferencesDto>(testMqttClient.ReceivedMessages.First(), JsonSerializerOptions.Web);
+
+        var actualObjectReceivedByMqttDevice =
+            JsonSerializer.Deserialize<AdminChangesPreferencesDto>(testMqttClient.ReceivedMessages.First(),
+                JsonSerializerOptions.Web);
         var comparison = new CompareLogic().Compare(actualObjectReceivedByMqttDevice, changePrefernecesDto);
         if (!comparison.AreEqual)
-            throw new Exception("Comparison failed: "+comparison.DifferencesString);
-
+            throw new Exception("Comparison failed: " + comparison.DifferencesString);
     }
-    
 }

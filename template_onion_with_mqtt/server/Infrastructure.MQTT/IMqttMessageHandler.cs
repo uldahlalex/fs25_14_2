@@ -1,11 +1,11 @@
 using HiveMQtt.Client.Events;
 using HiveMQtt.MQTT5.Types;
 
-namespace Infrastructure.Mqtt;
+namespace Infrastructure.MQTT;
 
 public interface IMqttMessageHandler
 {
-    abstract string TopicFilter { get; }
-    abstract QualityOfService QoS { get; }
+    string TopicFilter { get; }
+    QualityOfService QoS { get; }
     void Handle(object? sender, OnMessageReceivedEventArgs args);
 }

@@ -1,4 +1,4 @@
-namespace Application.Interfaces;
+namespace Application.Models.Dtos.RestDtos;
 
 public class AdminChangesPreferencesDto
 {

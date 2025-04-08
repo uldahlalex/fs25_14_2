@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Infrastructure.MQTT.SubscriptionEventHandlers;
+namespace Application.Models.Dtos.MqttSubscriptionDto;
 
 public class DeviceLogDto
 {

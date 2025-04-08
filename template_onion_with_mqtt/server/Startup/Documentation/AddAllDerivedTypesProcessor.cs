@@ -27,12 +27,11 @@ public sealed class AddAllDerivedTypesProcessor : IDocumentProcessor
                     return Array.Empty<Type>();
                 }
             })
-                   .Where(t =>
-                t != typeof(BaseDto) &&
-                !t.IsAbstract &&
-                typeof(BaseDto).IsAssignableFrom(t) ||
-        typeof(ApplicationBaseDto).IsAssignableFrom(t)                
-
+            .Where(t =>
+                (t != typeof(BaseDto) &&
+                 !t.IsAbstract &&
+                 typeof(BaseDto).IsAssignableFrom(t)) ||
+                typeof(ApplicationBaseDto).IsAssignableFrom(t)
             )
             .ToList();
 
