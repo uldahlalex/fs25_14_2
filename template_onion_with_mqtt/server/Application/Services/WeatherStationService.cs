@@ -3,6 +3,7 @@ using Application.Interfaces.Infrastructure.MQTT;
 using Application.Interfaces.Infrastructure.Postgres;
 using Application.Interfaces.Infrastructure.Websocket;
 using Application.Models;
+using Application.Models.Dtos;
 using Application.Models.Dtos.BroadcastModels;
 using Application.Models.Dtos.MqttSubscriptionDto;
 using Application.Models.Dtos.RestDtos;
@@ -50,4 +51,15 @@ public class WeatherStationService(
         mqttPublisher.Publish(dto, StringConstants.Device + $"/{dto.DeviceId}/" + StringConstants.ChangePreferences);
         return Task.CompletedTask;
     }
+
+    public async Task DeleteDataAndBroadcast(JwtClaims jwt)
+    {
+        await weatherStationRepository.DeleteAllData();
+        await connectionManager.BroadcastToTopic(StringConstants.Dashboard, new AdminHasDeletedData());
+    }
+}
+
+public class AdminHasDeletedData : ApplicationBaseDto
+{
+    public override string eventType { get; set; } = nameof(AdminHasDeletedData);
 }

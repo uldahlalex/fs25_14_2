@@ -6,4 +6,5 @@ public interface IWeatherStationRepository
 {
     List<Devicelog> GetRecentLogs();
     Devicelog AddDeviceLog(Devicelog deviceLog);
+    Task DeleteAllData();
 }

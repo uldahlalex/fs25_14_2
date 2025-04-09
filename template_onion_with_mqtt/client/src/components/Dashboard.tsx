@@ -1,10 +1,11 @@
 import {useWsClient} from "ws-request-hook";
 import {useEffect} from "react";
 import {Bar, BarChart, CartesianGrid, Legend, Rectangle, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
-import {ServerBroadcastsLiveDataToDashboard, StringConstants,} from "../generated-client.ts";
+import {AdminHasDeletedData, ServerBroadcastsLiveDataToDashboard, StringConstants,} from "../generated-client.ts";
 import toast from "react-hot-toast";
 import {useAtom} from "jotai";
 import {DeviceLogsAtom, JwtAtom} from "../atoms.ts";
+import {weatherStationClient} from "../apiControllerClients.ts";
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL
 const prod = import.meta.env.PROD;
@@ -33,11 +34,33 @@ export default function AdminDashboard() {
         return () => reactToMessageSetup();
     }, [readyState, jwt]);
 
+    useEffect(() => {
+        if (readyState != 1 || jwt == null || jwt.length < 1)
+            return;
+        const reactToMessageSetup = onMessage<AdminHasDeletedData>
+        (StringConstants.AdminHasDeletedData, (dto) => {
+            console.log(dto)
+            toast("someone has deleted everything")
+            setDeviceLogs([]);
+        })
+        return () => reactToMessageSetup();
+    }, [readyState, jwt]);
+
+
 
     return (<>
         
         <h1 className=" text-2xl font-bold mb-4  p-20  ">Data logs from weather station devices</h1>
 
+        <div>
+            <button onClick={() => {
+                weatherStationClient.deleteData(localStorage.getItem('jwt')!).then(success => {
+                    toast.success("wow you just deleted everything man")
+                }).catch(failure => {
+                    toast.error("you failed to delete everything")
+                })
+            }} className="btn btn-secondary btn-xl m-10">click here to delete data</button>
+        </div>
 
         <ResponsiveContainer width="100%" height={400}>
             <BarChart

@@ -17,4 +17,11 @@ public class WeatherStationRepository(MyDbContext ctx) : IWeatherStationReposito
         ctx.SaveChanges();
         return deviceLog;
     }
+
+    public async Task DeleteAllData()
+    {
+        var allDataLogs = ctx.Devicelogs.ToList();
+        ctx.RemoveRange(allDataLogs);
+        await ctx.SaveChangesAsync();
+    }
 }

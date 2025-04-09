@@ -35,4 +35,17 @@ public class WeatherStationController(
         await weatherStationService.UpdateDeviceFeed(dto, claims);
         return Ok();
     }
+
+    public const string DeleteDataRoute = nameof(DeleteData);
+    [HttpDelete]
+    [Route(DeleteDataRoute)]
+    public async Task<ActionResult> DeleteData([FromHeader]string authorization)
+    {
+        var jwt = securityService.VerifyJwtOrThrow(authorization);
+
+        await weatherStationService.DeleteDataAndBroadcast(jwt);
+        
+        return Ok();
+    }
+    
 }
