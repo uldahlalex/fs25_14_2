@@ -11,6 +11,7 @@ I will of course help with anything related to fullstack, internships, developme
 *The only exceptions are as listed below:*
 
 - Easter holiday (so week 17 is when office hours start)
+- The 29th of May: I'm available until 13:30 (but not after)
 - 7th of May: I'll be available from 9-10 but due to a meeting at 10 o'clock I'm not availble after this.
 - 27th of May (Tuesday, the day before submission): We have a guest speaker in the Innovatorium at 12 o'clock.
 
