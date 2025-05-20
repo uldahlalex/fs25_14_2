@@ -4,15 +4,7 @@
 
 I will of course help with anything related to fullstack, internships, development training, etc.
 
-- Wednesdays + Fridays I will be available 9:00 -> 11:30 in D17. (Normal fullstack hours)
-
-- Tuesdays + Thursdays I will be available 12:00 -> 14:30 in D17. (Normal cybersecurity hours)
-
-*The only exceptions are as listed below:*
-
-- 7th of May: I'll be available from 9-10 but due to a meeting at 10 o'clock I'm not availble after this.
-- 27th of May (Tuesday, the day before submission): We have a guest speaker in the Innovatorium at 12 o'clock.
-
+**I am present at the academy most days of the project period. Please email me (aup@easv.dk) if you need help. I am available via Zoom all days.**
 
 ## Mermaid charts for common fullstack operations
 
